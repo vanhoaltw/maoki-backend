@@ -4,6 +4,9 @@ const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 3001;
 
+const dbName = "hotel-haven";
+const URI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.p7e2eey.mongodb.net/${dbName}?retryWrites=true&w=majority`;
+
 const connectDB = require("./config/db");
 const routes = require("./routes");
 
@@ -20,7 +23,7 @@ app.use((err, req, res, next) => {
 });
 
 // Database connection URL / String
-connectDB("mongodb://localhost:27017/hotel-haven")
+connectDB(URI)
   .then(() => {
     console.log("Database connection established!");
 
