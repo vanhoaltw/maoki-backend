@@ -24,7 +24,6 @@ const userSchema = new Schema(
     },
     photoURL: {
       type: String,
-      required: true,
     },
     phone: {
       type: String,
@@ -43,6 +42,7 @@ const userSchema = new Schema(
     nid: {
       type: String, // Assuming National ID is alphanumeric, use String
       required: true,
+      minlength: 10,
     },
     role: {
       type: String,
