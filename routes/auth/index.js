@@ -1,10 +1,11 @@
 const router = require("express").Router();
 const User = require("../../models/User");
 const throwError = require("../../utils/throwError");
+const bcrypt = require("bcrypt");
 
-const bcrypt = require("bcrypt"); //TODO: implement
 router.post("/register", async (req, res, next) => {
   const data = req.body;
+
   try {
     // Data validation
     if (
@@ -14,9 +15,13 @@ router.post("/register", async (req, res, next) => {
       !data.phone ||
       !data.age ||
       !data.gender ||
-      !data.NID
+      !data.nid
     ) {
       throwError("All fields are required", 400);
+    }
+
+    if (data.password.length < 8) {
+      throwError("Password must be at least 8 characters", 400);
     }
 
     // Check if the email is already in use
@@ -25,16 +30,19 @@ router.post("/register", async (req, res, next) => {
       throwError("Email is already in use", 409);
     }
 
+    // Hash the password using bcrypt
+    const hashedPassword = await bcrypt.hash(data.password, 10); // 10 is the number of salt rounds
+
     // Create a new user using the Mongoose model
     const newUser = new User({
       name: data.name,
       email: data.email,
-      password: data.password,
+      password: hashedPassword, // Store the hashed password
       photoURL: data.photoURL || "", // Optional photo URL
       phone: data.phone,
       age: data.age,
-      gender: data.gender,
-      NID: data.NID,
+      gender: data.gender.toUpperCase(),
+      nid: data.nid,
     });
 
     // Save the user to the database
@@ -43,14 +51,17 @@ router.post("/register", async (req, res, next) => {
     // Respond with a success message
     res.status(201).json({message: "User created successfully", user: newUser});
   } catch (error) {
-    next(error);
+    next(error); // Pass the error to the global error handler
   }
 });
 
-router.post("/login", (req, res) => {
+router.post("/login", (req, res, next) => {
   const data = req.body;
 
-  res.end("Auth -> login");
+  try {
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.post("/logout", (req, res) => {

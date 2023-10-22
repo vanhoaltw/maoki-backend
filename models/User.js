@@ -20,6 +20,7 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
+      minLength: [8, "Password must be at least 8 characters"],
       required: true,
     },
     photoURL: {
@@ -36,7 +37,7 @@ const userSchema = new Schema(
     },
     gender: {
       type: String,
-      enum: ["Male", "Female", "Other"],
+      enum: ["MALE", "FEMALE", "OTHER"],
       required: true,
     },
     nid: {
@@ -46,8 +47,7 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["GENERAL", "MODERATE", "ADMIN"],
-      default: "GENERAL",
+      enum: ["MODERATOR", "ADMIN"],
     },
   },
   {timestamps: true}
