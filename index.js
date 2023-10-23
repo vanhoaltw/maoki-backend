@@ -19,7 +19,6 @@ app.use(routes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {
-  console.clear();
   console.log(err);
   res
     .status(err.status || 500)

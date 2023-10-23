@@ -9,7 +9,7 @@ const userSchema = new Schema(
     email: {
       type: String,
       required: true,
-      unique: true,
+      unique: [true, "Email already registered"],
       validate: {
         validator: function (value) {
           // Regular expression for basic email validation
