@@ -27,12 +27,18 @@ const updateUserById = async (req, res, next) => {
     if (data?.email) throwError("Email can't be change", 404);
 
     // check validation if->  gender: undefined, role: undefined
-    data.role =
-      role[data.role.toUpperCase()] ||
-      throwError("ROLE: please provide correct value", 404);
-    data.gender =
-      gender[data.gender.toUpperCase()] ||
-      throwError("GENDER: please provide correct value", 404);
+
+    if (data?.role) {
+      data.role =
+        role[data?.role.toUpperCase()] ||
+        throwError("ROLE: please provide correct value", 404);
+    }
+
+    if (data?.gender) {
+      data.gender =
+        gender[data?.gender?.toUpperCase()] ||
+        throwError("GENDER: please provide correct value", 404);
+    }
 
     const existingUser = await User.findById(id);
     if (!existingUser) {

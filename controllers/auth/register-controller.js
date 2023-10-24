@@ -20,7 +20,7 @@ const registerController = async (req, res, next) => {
     ]);
 
     // Data validation
-    if (isRequired) {
+    if (!isRequired) {
       throwError("All fields are required", 400);
     }
 

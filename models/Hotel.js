@@ -1,40 +1,64 @@
 const {Schema, model} = require("mongoose");
+const status = require("../constants/status");
 
 const hotelSchema = new Schema(
   {
+    managerId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     name: {
       type: String,
       required: [true, "Name is required"],
       minlength: 2,
     },
-    photoURL: {type: String, required: true},
-    email: {type: String, required: [true, "Email is required"], unique: true},
-    password: {type: String, required: [true, "Password is required"]},
-    phone: {type: String, required: [true, "Phone is required"], unique: true},
-    description: String,
-    availableRooms: {
+    photoURL: {
+      type: String,
+      required: [true, "Photo URL is required"],
+    },
+    description: {
+      type: String,
+      required: [true, "Description is required"],
+    },
+    availableRoom: {
       type: Number,
+      required: [true, "Available Room is required"],
       default: 0,
       min: 0,
     },
-    location: String,
-    map: {
-      lat: {
-        type: Number,
-        min: -90,
-        max: 90,
+    address: {
+      thumbnailURL: {
+        type: String,
+        required: [true, "Thumbnail URL is required"],
       },
-      lng: {
-        type: Number,
-        min: -180,
-        max: 180,
+      location: {
+        type: String,
+        required: [true, "Location is required"],
+      },
+      map: {
+        lat: {
+          type: Number,
+          required: [true, "Latitude is required"],
+          min: -90,
+          max: 90,
+        },
+        lng: {
+          type: Number,
+          required: [true, "Longitude is required"],
+          min: -180,
+          max: 180,
+        },
       },
     },
     status: {
       type: String,
-      enum: ["PENDING", "APPROVED", "REJECTED"],
-      default: "PENDING",
       required: [true, "Status is required"],
+      enum: [status.PENDING, status.REJECTED, status.APPROVED],
+      default: status.PENDING,
+    },
+    feedback: {
+      type: String,
     },
   },
   {timestamps: true}
