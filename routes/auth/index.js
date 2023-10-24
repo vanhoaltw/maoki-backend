@@ -1,19 +1,11 @@
 const router = require("express").Router();
 
-const userRegisterController = require("../../controllers/auth/user-register-controller");
-const hotelRegisterController = require("../../controllers/auth/hotel-register-controller");
+const registerController = require("../../controllers/auth/register-controller");
+const loginController = require("../../controllers/auth/login-controller");
 
-router.post("/register/user", userRegisterController);
-router.post("/register/hotel", hotelRegisterController);
+router.post("/register", registerController);
 
-router.post("/login", (req, res, next) => {
-  const data = req.body;
-
-  try {
-  } catch (error) {
-    next(error);
-  }
-});
+router.post("/login", loginController);
 
 router.post("/logout", (req, res) => {
   // TODO: need to research

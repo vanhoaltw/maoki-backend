@@ -1,14 +1,10 @@
 const router = require("express").Router();
 
 const authRoutes = require("./auth");
-const userRoutes = require("./user");
 const adminRoutes = require("./admin");
-const hotelRoutes = require("./hotel");
 
 router.use("/auth", authRoutes);
-router.use("/user", userRoutes);
 router.use("/admin", adminRoutes);
-router.use("/hotel", hotelRoutes);
 
 // Home route
 router.get("/", (req, res) => {

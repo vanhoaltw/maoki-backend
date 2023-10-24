@@ -1,29 +1,30 @@
+const gender = require("../../constant/gender");
 const User = require("../../models/User");
+const isFieldsRequired = require("../../utils/isFieldsRequired");
 const throwError = require("../../utils/throwError");
 const bcrypt = require("bcrypt");
 
-userRegisterController = async (req, res, next) => {
+const registerController = async (req, res, next) => {
   const data = req.body;
   data.gender = data?.gender.toUpperCase();
 
-  const requiredFields = [
-    "name",
-    "email",
-    "password",
-    "phone",
-    "age",
-    "gender",
-    "nid",
-  ];
-
   try {
     // check the fields is required
-    const isRequired = requiredFields.some((field) => !data[field]);
+    const isRequired = isFieldsRequired(data, [
+      "name",
+      "email",
+      "password",
+      "phone",
+      "age",
+      "gender",
+    ]);
 
     // Data validation
     if (isRequired) {
       throwError("All fields are required", 400);
     }
+
+    data.gender = gender[data.gender.toUpperCase()];
 
     if (data.password.length < 8) {
       throwError("Password must be at least 8 characters", 400);
@@ -64,4 +65,4 @@ userRegisterController = async (req, res, next) => {
   }
 };
 
-module.exports = userRegisterController;
+module.exports = registerController;

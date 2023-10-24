@@ -1,4 +1,6 @@
 const {Schema, model} = require("mongoose");
+const gender = require("../constant/gender");
+const role = require("../constant/role");
 
 const userSchema = new Schema(
   {
@@ -37,17 +39,17 @@ const userSchema = new Schema(
     },
     gender: {
       type: String,
-      enum: ["MALE", "FEMALE", "OTHER"],
+      enum: [gender.MALE, gender.FEMALE, gender.OTHERS],
       required: true,
     },
     nid: {
       type: String, // Assuming National ID is alphanumeric, use String
-      required: true,
       minlength: 10,
     },
     role: {
       type: String,
-      enum: ["MODERATOR", "ADMIN"],
+      enum: [role.CUSTOMER, role.MANAGER, role.ADMIN],
+      default: role.CUSTOMER,
     },
   },
   {timestamps: true}
