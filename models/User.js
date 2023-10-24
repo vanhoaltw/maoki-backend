@@ -1,6 +1,6 @@
 const {Schema, model} = require("mongoose");
-const gender = require("../constant/gender");
-const role = require("../constant/role");
+const gender = require("../constants/gender");
+const role = require("../constants/role");
 
 const userSchema = new Schema(
   {

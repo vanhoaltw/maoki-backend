@@ -1,4 +1,4 @@
-const gender = require("../../constant/gender");
+const gender = require("../../constants/gender");
 const User = require("../../models/User");
 const isFieldsRequired = require("../../utils/isFieldsRequired");
 const throwError = require("../../utils/throwError");

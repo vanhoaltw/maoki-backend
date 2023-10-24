@@ -1,10 +1,11 @@
 const router = require("express").Router();
 
+const authenticate = require("../middlewares/authenticate");
 const authRoutes = require("./auth");
 const adminRoutes = require("./admin");
 
 router.use("/auth", authRoutes);
-router.use("/admin", adminRoutes);
+router.use("/admin", authenticate, adminRoutes);
 
 // Home route
 router.get("/", (req, res) => {
