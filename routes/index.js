@@ -4,11 +4,13 @@ const authenticate = require("../middlewares/authenticate");
 const isAdmin = require("../middlewares/isAdmin");
 
 const authRoutes = require("./auth");
+const userRoutes = require("./user");
 const adminRoutes = require("./admin");
 const managerRoutes = require("./manager");
 const isManager = require("../middlewares/isManager");
 
 router.use("/auth", authRoutes);
+router.use("/user", authenticate, userRoutes);
 router.use("/admin", authenticate, isAdmin, adminRoutes);
 router.use("/manager", authenticate, isManager, managerRoutes);
 

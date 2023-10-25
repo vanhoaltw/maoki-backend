@@ -59,7 +59,7 @@ const registerController = async (req, res, next) => {
     await newUser.save();
 
     // Respond with a success message
-    res.status(201).json({message: "User created successfully", user: newUser});
+    res.status(201).json({message: "User created successfully"});
   } catch (error) {
     next(error); // Pass the error to the global error handler
   }
