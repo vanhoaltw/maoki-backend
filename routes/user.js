@@ -3,12 +3,11 @@ const throwError = require("../utils/throwError");
 
 const router = require("express").Router();
 
-router.get("/:email", async (req, res, next) => {
+router.get("/", async (req, res, next) => {
   try {
-    const email = req.params.email;
-    if (!email) throwError("email is required", 404);
+    if (!req.user._id) throwError("identifier not found!", 404);
 
-    const existingUser = await User.findOne({email}).exec();
+    const existingUser = await User.findOne({_id: req.user._id}).exec();
     if (!existingUser) throwError("user not found", 404);
 
     res.json(existingUser);
