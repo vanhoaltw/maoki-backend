@@ -9,7 +9,7 @@ router.get("/", async (req, res, next) => {
 
     const existingUser = await User.findOne({_id: req.user._id}).exec();
     if (!existingUser) throwError("user not found", 404);
-
+    delete existingUser._doc?.password;
     res.json(existingUser);
   } catch (error) {
     next(error);
