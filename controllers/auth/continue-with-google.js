@@ -1,3 +1,4 @@
+const jwt = require("jsonwebtoken");
 const UserGoogleAccount = require("../../models/UserGoogleAccount");
 const isFieldsRequired = require("../../utils/isFieldsRequired");
 const throwError = require("../../utils/throwError");
@@ -19,9 +20,17 @@ const continueWithGoogle = async (req, res, next) => {
       user = new UserGoogleAccount(data);
       await user.save();
     }
+    const payload = {
+      name: user._doc?.name,
+      email: user._doc?.email,
+      _id: user._doc?._id,
+    };
+
+    const token = jwt.sign(payload, process.env.SECRET_KEY);
+
     delete user._doc.uid;
 
-    res.json(user);
+    res.json({googleToken: token, user});
   } catch (error) {
     next(error);
   }
