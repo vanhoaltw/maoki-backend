@@ -1,10 +1,7 @@
 const router = require("express").Router();
 
-const continueWithGoogle = require("../../controllers/auth/continue-with-google");
 const registerController = require("../../controllers/auth/register-controller");
 const loginController = require("../../controllers/auth/login-controller");
-
-router.post("/continue-with-google", continueWithGoogle);
 
 router.post("/register", registerController);
 
