@@ -1,22 +1,24 @@
 const {Schema, model} = require("mongoose");
 
 const roomSchema = new Schema({
-  title: {
-    type: String,
-    required: [true, "Title is required"],
-  },
   hotelId: {
     type: Schema.Types.ObjectId,
     ref: "Hotel",
     required: [true, "Hotel ID is required"],
   },
+  title: {
+    type: String,
+    required: [true, "Title is required"],
+  },
   facilities: {
     type: [String],
     default: [],
+    required: [true, "Facilities is required"],
   },
   thumbnails: {
     type: [String],
     default: [],
+    required: [true, "Thumbnail is required"],
   },
   bookedCount: {
     type: Number,
@@ -36,19 +38,21 @@ const roomSchema = new Schema({
     child: {
       type: Number,
       required: [true, "Child capacity is required"],
-      min: [-180, "Child capacity should be between -180 and 180"],
-      max: [180, "Child capacity should be between -180 and 180"],
+      min: [0, "Child capacity cannot be negative"],
     },
   },
   roomInfo: {
-    roomSize: {type: String},
-    bedType: {type: String},
-    view: {type: String},
+    roomSize: {type: String, required: [true, "Room size is required"]},
     regularPrice: {
       type: Number,
       required: [true, "Regular price is required"],
     },
-    discountedPrice: {type: Number},
+    discountedPrice: {
+      type: Number,
+      required: [true, "Discounted price is required"],
+    },
+    bedType: {type: String},
+    view: {type: String},
     additionalInfo: {type: String},
   },
 });
