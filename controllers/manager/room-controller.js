@@ -1,3 +1,4 @@
+const status = require("../../constants/status");
 const Hotel = require("../../models/Hotel");
 const Room = require("../../models/Room");
 const isArrayEmpty = require("../../utils/isArrayEmpty");
@@ -101,6 +102,10 @@ const post = async (req, res, next) => {
 
     if (!existingHotel) {
       throwError("Hotel not exist!");
+    }
+
+    if (existingHotel.status !== status.APPROVED) {
+      throwError("Hotel is not APPROVED", 404);
     }
 
     data.hotelId = existingHotel._id;
