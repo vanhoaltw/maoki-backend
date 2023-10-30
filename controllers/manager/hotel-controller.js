@@ -1,6 +1,6 @@
-const Hotel = require("../models/Hotel");
-const isFieldsRequired = require("../utils/isFieldsRequired");
-const throwError = require("../utils/throwError");
+const Hotel = require("../../models/Hotel");
+const isFieldsRequired = require("../../utils/isFieldsRequired");
+const throwError = require("../../utils/throwError");
 
 const getHotel = async (req, res, next) => {
   try {
