@@ -1,6 +1,8 @@
 const status = require("../../constants/status");
 const throwError = require("../../utils/throwError");
 const Hotel = require("../../models/Hotel");
+const Room = require("../../models/Room");
+const User = require("../../models/User");
 
 const updateStatus = async (req, res, next) => {
   try {
@@ -41,13 +43,17 @@ const updateStatus = async (req, res, next) => {
 
     if (existingHotel.status === dataStatus) throwError("Already in use", 404);
 
-    const updatedStatus = await Hotel.findOneAndUpdate({_id: id}, updatedDoc, {
-      new: true,
-    });
+    const updatedStatus = await Hotel.findOneAndUpdate(
+      { _id: id },
+      updatedDoc,
+      {
+        new: true,
+      }
+    );
 
     if (!updatedStatus) throwError("Status not updated", 404);
 
-    res.json({message: "Status updated successfully", hotel: updatedStatus});
+    res.json({ message: "Status updated successfully", hotel: updatedStatus });
   } catch (error) {
     next(error);
   }
@@ -56,12 +62,21 @@ const updateStatus = async (req, res, next) => {
 const getHotelById = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const hotel = await Hotel.findById(id);
+    let hotel = await Hotel.findById(id);
+    let manager = await User.findById(hotel.managerId);
+    manager = {
+      managerName: manager.name,
+      email: manager.email,
+      managerPhotoURL: manager.photoURL,
+    };
 
     if (!hotel) {
       throwError("Hotel not found", 404);
     }
-    res.json(hotel);
+    const room = await Room.find({ hotelId: hotel._id });
+    hotel = { ...hotel._doc, ...manager };
+
+    res.json({ hotel, room });
   } catch (error) {
     next(error);
   }
@@ -80,4 +95,4 @@ const getHotel = async (req, res, next) => {
   }
 };
 
-module.exports = {updateStatus, getHotelById, getHotel};
+module.exports = { updateStatus, getHotelById, getHotel };
