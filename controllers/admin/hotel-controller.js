@@ -80,6 +80,7 @@ const getHotel = async (req, res, next) => {
         });
 
         return {
+          _id: singleHotel._id,
           photoURL: singleHotel.photoURL,
           availableRoom: singleHotel.availableRoom,
           status: singleHotel.status,
