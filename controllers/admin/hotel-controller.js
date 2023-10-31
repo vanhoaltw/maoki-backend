@@ -1,6 +1,8 @@
 const status = require("../../constants/status");
 const throwError = require("../../utils/throwError");
 const Hotel = require("../../models/Hotel");
+const User = require("../../models/User");
+const Room = require("../../models/Room");
 
 const updateStatus = async (req, res, next) => {
   try {
@@ -66,15 +68,36 @@ const getHotelById = async (req, res, next) => {
     next(error);
   }
 };
-
 const getHotel = async (req, res, next) => {
   try {
-    const hotel = await Hotel.find();
+    const hotels = await Hotel.find().lean();
 
-    if (hotel.length == 0) {
+    const hotelPromises = hotels.map(async (singleHotel) => {
+      try {
+        const manager = await User.findById(singleHotel.managerId).lean();
+        const addedRoomCount = await Room.countDocuments({
+          hotelId: singleHotel._id,
+        });
+
+        return {
+          photoURL: singleHotel.photoURL,
+          availableRoom: singleHotel.availableRoom,
+          status: singleHotel.status,
+          email: manager.email,
+          addedRoom: addedRoomCount,
+        };
+      } catch (error) {
+        next(error);
+      }
+    });
+
+    const hotelData = await Promise.all(hotelPromises);
+
+    if (hotelData.length === 0) {
       throwError("Hotel not found", 404);
     }
-    res.json(hotel);
+
+    res.json(hotelData);
   } catch (error) {
     next(error);
   }
