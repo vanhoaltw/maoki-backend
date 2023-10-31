@@ -21,7 +21,7 @@ router.get("/", (req, res) => {
 
 // Error 404 Page Not Found
 router.use((req, res, next) => {
-  res.status(404).json({message: "404 Route is not available."});
+  res.status(404).json({ message: "404 Route is unavailable." });
 });
 
 module.exports = router;
