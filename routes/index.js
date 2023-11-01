@@ -2,17 +2,19 @@ const router = require("express").Router();
 
 const authenticate = require("../middlewares/authenticate");
 const isAdmin = require("../middlewares/isAdmin");
+const isManager = require("../middlewares/isManager");
 
 const authRoutes = require("./auth");
 const userRoutes = require("./user");
 const adminRoutes = require("./admin");
 const managerRoutes = require("./manager");
-const isManager = require("../middlewares/isManager");
+const publicRoutes = require("./public");
 
 router.use("/auth", authRoutes);
 router.use("/user", authenticate, userRoutes);
 router.use("/admin", authenticate, isAdmin, adminRoutes);
 router.use("/manager", authenticate, isManager, managerRoutes);
+router.use("/public", publicRoutes);
 
 // Home route
 router.get("/", (req, res) => {
@@ -21,7 +23,7 @@ router.get("/", (req, res) => {
 
 // Error 404 Page Not Found
 router.use((req, res, next) => {
-  res.status(404).json({ message: "404 Route is unavailable." });
+  res.status(404).json({message: "404 Route is unavailable."});
 });
 
 module.exports = router;
