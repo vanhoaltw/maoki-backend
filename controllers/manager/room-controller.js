@@ -111,7 +111,11 @@ const post = async (req, res, next) => {
     data.hotelId = existingHotel._id;
 
     if (existingHotel._doc.availableRoom <= existingHotel._doc.addedRoom) {
-      throwError("Room not available", 404);
+      throwError(
+        `Room not available because room limit 
+          ${existingHotel._doc.availableRoom}`,
+        404
+      );
     }
 
     const newRoom = new Room(data);
