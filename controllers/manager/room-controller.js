@@ -110,7 +110,7 @@ const post = async (req, res, next) => {
 
     data.hotelId = existingHotel._id;
 
-    if (existingHotel.availableRoom <= existingHotel.addedRoom) {
+    if (existingHotel._doc.availableRoom <= existingHotel._doc.addedRoom) {
       throwError("Room not available", 404);
     }
 
@@ -119,8 +119,7 @@ const post = async (req, res, next) => {
 
     await Hotel.findOneAndUpdate(
       {managerId: req.user._id},
-      {$inc: {addedRoom: 1}},
-      {new: true}
+      {$inc: {addedRoom: 1}}
     );
 
     res.json({message: "Room created successfully"});
