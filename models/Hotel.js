@@ -31,12 +31,13 @@ const hotelSchema = new Schema(
       type: Number,
       default: 0,
       min: [0, "Added Room cannot be negative"],
-      max: [
-        this.availableRoom - 1,
-        "Added Room cannot be equal to or greater than Available Room",
-      ],
+      validate: {
+        validator: function (value) {
+          return value <= this.availableRoom;
+        },
+        message: "Added Room cannot be greater than Available Room.",
+      },
     },
-
     address: {
       thumbnailURL: {
         type: String,
