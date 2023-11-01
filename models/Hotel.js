@@ -27,6 +27,16 @@ const hotelSchema = new Schema(
       default: 0,
       min: 0,
     },
+    addedRoom: {
+      type: Number,
+      default: 0,
+      min: [0, "Added Room cannot be negative"],
+      max: [
+        this.availableRoom - 1,
+        "Added Room cannot be equal to or greater than Available Room",
+      ],
+    },
+
     address: {
       thumbnailURL: {
         type: String,

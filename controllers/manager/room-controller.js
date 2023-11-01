@@ -121,11 +121,12 @@ const post = async (req, res, next) => {
     const newRoom = new Room(data);
     await newRoom.save();
 
-    await Hotel.findOneAndUpdate(
+    const updatedHotel = await Hotel.findOneAndUpdate(
       {managerId: req.user._id},
-      {$inc: {addedRoom: 1}}
+      {$inc: {addedRoom: 1}},
+      {new: true}
     );
-
+    console.log(updatedHotel);
     res.json({message: "Room created successfully"});
   } catch (error) {
     next(error);
