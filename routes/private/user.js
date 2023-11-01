@@ -1,5 +1,5 @@
-const User = require("../models/User");
-const throwError = require("../utils/throwError");
+const User = require("../../models/User");
+const throwError = require("../../utils/throwError");
 
 const router = require("express").Router();
 
