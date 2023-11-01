@@ -12,17 +12,12 @@ const publicRoutes = require("./public");
 
 router.use("/auth", authRoutes);
 
-router.use("/", authenticate, privateRoutes);
-
 router.use("/admin", authenticate, isAdmin, adminRoutes);
 router.use("/manager", authenticate, isManager, managerRoutes);
 
 router.use("/public", publicRoutes);
 
-// Home route
-router.get("/", (req, res) => {
-  res.send("<h1>HotelHaven is available.</h1>");
-});
+router.use("/", authenticate, privateRoutes);
 
 // Error 404 Page Not Found
 router.use((req, res, next) => {
