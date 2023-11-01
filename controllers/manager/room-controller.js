@@ -110,8 +110,18 @@ const post = async (req, res, next) => {
 
     data.hotelId = existingHotel._id;
 
+    if (existingHotel.availableRoom <= existingHotel.addedRoom) {
+      throwError("Room not available", 404);
+    }
+
     const newRoom = new Room(data);
     await newRoom.save();
+
+    await Hotel.findOneAndUpdate(
+      {managerId: req.user._id},
+      {$inc: {addedRoom: 1}},
+      {new: true}
+    );
 
     res.json({message: "Room created successfully"});
   } catch (error) {
