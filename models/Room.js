@@ -25,8 +25,8 @@ const roomSchema = new Schema({
     min: 0,
   },
   availability: {
-    startDate: {type: Date, default: null},
-    endDate: {type: Date, default: null},
+    checkIn: {type: Date, default: null},
+    checkOut: {type: Date, default: null},
     isBlocked: {type: Boolean, default: false},
   },
   capacity: {
@@ -55,6 +55,7 @@ const roomSchema = new Schema({
     view: {type: String},
     additionalInfo: {type: String},
   },
+  bookedCount: {type: Number},
 });
 
 const Room = model("Room", roomSchema);
