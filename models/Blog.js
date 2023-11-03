@@ -14,6 +14,7 @@ const blogSchema = new Schema(
     },
     thumbnail: {
       type: String,
+      required: [true, "Thumbnail is required"],
     },
     description: {
       type: String,
