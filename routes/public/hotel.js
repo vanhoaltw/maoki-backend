@@ -22,27 +22,48 @@ router.get("/:id", async (req, res, next) => {
 
 router.get("/", async (req, res, next) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const query = req.query;
 
-    const skip = (page - 1) * limit;
+    let hotel = [];
 
-    let hotel = await Hotel.find().skip(skip).limit(limit);
+    if (query.location) {
+      hotel = await Hotel.find({"address.location": query.location});
+    } else {
+      hotel = await Hotel.find();
+    }
 
-    if (!hotel) throwError("Hotel not found!", 404);
+    if (query.checkIn || query.checkOut) {
+      if (!query.checkIn || !query.checkOut) {
+        throwError("checkIn and checkOut is required.", 404);
+      }
 
-    hotel = hotel.map((singleHotel) => {
-      return {
-        _id: singleHotel._id,
-        name: singleHotel.name,
-        location: singleHotel.address.location,
-        photoURL: singleHotel.photoURL,
-        description: singleHotel.description.slice(0, 60),
-        rating: 0, // TODO: will be updated
-      };
-    });
+      if (hotel.length == 0) throwError("Hotel not found!", 404);
+      hotel = await Promise.all(
+        hotel.map(async (singleHotel) => {
+          const room = await Room.findOne({
+            hotelId: singleHotel._id,
+            $or: [
+              {
+                "availability.checkIn": {$lte: new Date(query.checkOut)},
+                "availability.checkOut": {$gte: new Date(query.checkIn)},
+              },
+              {
+                "availability.isBlocked": false,
+              },
+            ],
+          });
+          if (room) {
+            return singleHotel;
+          }
+        })
+      );
 
-    res.json(hotel);
+      hotel = hotel.filter(Boolean);
+    }
+
+    if (hotel.length == 0) throwError("Hotel not found!", 404);
+
+    res.json({hotel});
   } catch (error) {
     next(error);
   }
