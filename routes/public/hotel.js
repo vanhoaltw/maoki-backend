@@ -6,13 +6,31 @@ const throwError = require("../../utils/throwError");
 router.get("/:id", async (req, res, next) => {
   try {
     const id = req.params.id;
+    const query = req.query;
     if (!id) throwError("Invalid id");
 
     const hotel = await Hotel.findById(id);
 
     if (!hotel) throwError("No hotel found");
 
-    const rooms = await Room.find({hotelId: hotel._id});
+    let rooms = [];
+
+    if (query.checkIn && query.checkOut) {
+      rooms = await Room.find({
+        hotelId: hotel._id,
+        $or: [
+          {
+            "availability.checkIn": {$lte: new Date(query.checkOut)},
+            "availability.checkOut": {$gte: new Date(query.checkIn)},
+          },
+          {
+            "availability.isBlocked": false,
+          },
+        ],
+      });
+    } else {
+      rooms = await Room.find({hotelId: hotel._id});
+    }
 
     res.json({hotel, rooms});
   } catch (error) {
