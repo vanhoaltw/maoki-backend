@@ -68,7 +68,7 @@ router.get("/", async (req, res, next) => {
 
     if (hotel.length == 0) throwError("Hotel not found!", 404);
 
-    res.json({hotel});
+    res.json(hotel);
   } catch (error) {
     next(error);
   }
