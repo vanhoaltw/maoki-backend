@@ -29,7 +29,12 @@ router.get("/", async (req, res, next) => {
     if (query.location) {
       hotel = await Hotel.find({"address.location": query.location});
     } else {
-      hotel = await Hotel.find();
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+
+      const skip = (page - 1) * limit;
+
+      hotel = await Hotel.find().skip(skip).limit(limit);
     }
 
     if (query.checkIn || query.checkOut) {
