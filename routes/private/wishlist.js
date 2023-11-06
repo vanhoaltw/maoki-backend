@@ -9,9 +9,16 @@ router.delete("/:id", async (req, res, next) => {
     if (!id) {
       throwError("id must be provide");
     }
-    const existingWishlist = await Wishlist.findByIdAndDelete(id);
+
+    const existingWishlist = await Wishlist.findOne({
+      $or: [{roomId: id}, {_id: id}],
+    });
 
     if (!existingWishlist) throwError("Wishlist not found");
+
+    const wishlist = await Wishlist.findByIdAndDelete(existingWishlist._id);
+
+    if (!wishlist) throwError("Wishlist not delete");
 
     res.json({message: "Wishlist deleted successfully"});
   } catch (error) {
