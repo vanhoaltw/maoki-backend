@@ -11,7 +11,7 @@ router.delete("/:id", async (req, res, next) => {
     }
 
     const existingWishlist = await Wishlist.findOne({
-      userId: req.user_.id,
+      userId: req.user._id,
       $or: [{roomId: id}, {_id: id}],
     });
 
