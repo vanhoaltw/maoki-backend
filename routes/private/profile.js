@@ -14,7 +14,7 @@ router.get("/:id", async (req, res, next) => {
 
     user = {
       name: user.name,
-      profileURL: user.profileURL,
+      photoURL: user.photoURL,
       age: user.age,
       gender: user.gender,
       joined: user.createdAt,
