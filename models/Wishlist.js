@@ -5,7 +5,6 @@ const wishlistSchema = new Schema({
     type: Schema.Types.ObjectId,
     required: [true, "roomId id must be provided"],
     ref: "Room",
-    unique: true,
   },
   userId: {
     type: Schema.Types.ObjectId,

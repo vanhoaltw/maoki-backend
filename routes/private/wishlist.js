@@ -11,6 +11,7 @@ router.delete("/:id", async (req, res, next) => {
     }
 
     const existingWishlist = await Wishlist.findOne({
+      userId: req.user_.id,
       $or: [{roomId: id}, {_id: id}],
     });
 
@@ -46,7 +47,10 @@ router.post("/", async (req, res, next) => {
       throwError("roomId must be provide", 404);
     }
 
-    const existingWishlist = await Wishlist.findOne({roomId});
+    const existingWishlist = await Wishlist.findOne({
+      roomId,
+      userId: req.user._id,
+    });
 
     if (existingWishlist) {
       throwError("Wishlist already saved", 409);
