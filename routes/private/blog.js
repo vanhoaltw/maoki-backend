@@ -30,6 +30,9 @@ router.post("/", async (req, res, next) => {
 
     if (!isRequired) throwError("Field is required", 404);
 
+    if (data.description.length < 100)
+      throwError("Description min length is 100");
+
     data.userId = req.user._id;
     data.status = status.PENDING;
 

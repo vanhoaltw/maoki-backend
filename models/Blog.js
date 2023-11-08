@@ -19,6 +19,7 @@ const blogSchema = new Schema(
     description: {
       type: String,
       required: [true, "Description is required"],
+      min: [100, "Description min length is 100"],
     },
     category: {
       type: String,
