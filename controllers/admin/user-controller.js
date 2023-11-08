@@ -88,7 +88,38 @@ const userDeleteById = async (req, res, next) => {
 
 const getUser = async (req, res, next) => {
   try {
-    const {page = 1, limit = 20, descending = "false"} = req.query;
+    const {
+      page = 1,
+      limit = 20,
+      descending = "false",
+      length = "false",
+    } = req.query;
+
+    if (length == "true") {
+      const counts = await User.aggregate([
+        {
+          $group: {
+            _id: "$role",
+            count: {$sum: 1},
+          },
+        },
+      ]);
+
+      const result = {
+        USERS: 0,
+        CUSTOMER: 0,
+        ADMIN: 0,
+        MANAGER: 0,
+      };
+
+      counts.forEach((count) => {
+        const role = count._id;
+        result[role] = count.count;
+        result["USERS"] = result.USERS + count.count;
+      });
+
+      return res.json(result);
+    }
 
     const parsedLimit = parseInt(limit, 10);
     const parsedPage = parseInt(page, 10);
