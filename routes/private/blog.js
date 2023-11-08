@@ -34,7 +34,6 @@ router.post("/", async (req, res, next) => {
       throwError("Description min length is 100");
 
     data.userId = req.user._id;
-    data.status = status.PENDING;
 
     const newBlog = new Blog(data);
     await newBlog.save();

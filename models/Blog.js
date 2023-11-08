@@ -1,5 +1,4 @@
 const {Schema, model} = require("mongoose");
-const status = require("../constants/status");
 
 const blogSchema = new Schema(
   {
@@ -28,11 +27,6 @@ const blogSchema = new Schema(
     likeCount: {
       type: Number,
       default: 0,
-    },
-    status: {
-      type: String,
-      enum: [status.PENDING, status.APPROVED, status.REJECTED],
-      default: status.PENDING,
     },
     feedback: {
       type: String,
