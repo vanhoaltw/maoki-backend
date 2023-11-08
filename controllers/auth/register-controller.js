@@ -3,6 +3,7 @@ const User = require("../../models/User");
 const isFieldsRequired = require("../../utils/isFieldsRequired");
 const throwError = require("../../utils/throwError");
 const bcrypt = require("bcrypt");
+const validatePassword = require("../../utils/validatePassword");
 
 const registerController = async (req, res, next) => {
   const data = req.body;
@@ -26,8 +27,11 @@ const registerController = async (req, res, next) => {
 
     data.gender = gender[data.gender.toUpperCase()];
 
-    if (data.password.length < 8) {
-      throwError("Password must be at least 8 characters", 400);
+    const password = data.password;
+    const passwordError = validatePassword(password);
+
+    if (passwordError) {
+      throwError(passwordError, 400);
     }
 
     // Hash the password using bcrypt
