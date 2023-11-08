@@ -88,12 +88,27 @@ const userDeleteById = async (req, res, next) => {
 
 const getUser = async (req, res, next) => {
   try {
-    const user = await User.find();
+    const {page = 1, limit = 20, descending = "false"} = req.query;
 
-    if (user.length == 0) {
+    const parsedLimit = parseInt(limit, 10);
+    const parsedPage = parseInt(page, 10);
+
+    // Define the sort direction based on the 'descending' query parameter
+    const sortDirection = descending === "true" ? -1 : 1;
+
+    const skip = (parsedPage - 1) * parsedLimit;
+
+    // Use Mongoose to query the database with sorting, limiting, and paging
+    const users = await User.find()
+      .sort({createdAt: sortDirection})
+      .skip(skip)
+      .limit(parsedLimit);
+
+    if (users.length === 0) {
       throwError("User not found", 404);
     }
-    res.json(user);
+
+    res.json(users);
   } catch (error) {
     next(error);
   }
