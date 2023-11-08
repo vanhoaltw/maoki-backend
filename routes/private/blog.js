@@ -39,7 +39,7 @@ router.post("/", async (req, res, next) => {
     const newBlog = new Blog(data);
     await newBlog.save();
 
-    res.json({message: "Blog created successfully!", data: newBlog});
+    res.json({message: "Blog created successfully!"});
   } catch (error) {
     next(error);
   }
