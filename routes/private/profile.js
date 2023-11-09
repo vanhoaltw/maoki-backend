@@ -26,12 +26,42 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-router.put("/:id", (req, res, next) => {
+// router.put("/:id", (req, res, next) => {
+//   try {
+//     const id = req.params.id;
+//     res.json("put id" + id);
+//   } catch (error) {
+//     next(error);
+//   }
+// });
+
+router.put("/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    res.json("put id" + id);
+    const { name, photoURL, newPassword, phone } = req.body;
+
+    const result = await User.updateOne(
+      { _id: id },
+      {
+        $set: {
+          name: name,
+          photoURL: photoURL,
+          password: newPassword,
+          phone: phone,
+        },
+      }
+    );
+
+    result.json(result);
+    if (result.nModified > 0) {
+      res.json({ success: true, message: "User updated successfully" });
+    } else {
+      res.status(404).json({ success: false, message: "User not found" });
+    }
   } catch (error) {
-    next(error);
+    res.status(500).json({
+      error: "Error in updating user",
+    });
   }
 });
 
