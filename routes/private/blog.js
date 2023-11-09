@@ -1,4 +1,5 @@
 const Blog = require("../../models/Blog");
+const User = require("../../models/User");
 const isFieldsRequired = require("../../utils/isFieldsRequired");
 const throwError = require("../../utils/throwError");
 const router = require("express").Router();
@@ -125,9 +126,19 @@ router.get("/:id", async (req, res, next) => {
 
     if (!id) throwError("id is required", 404);
 
-    const blog = await Blog.findOne({_id: id});
+    let blog = await Blog.findOne({_id: id});
 
     if (!blog) throwError("Blog not found", 404);
+
+    const user = await User.findOne({_id: blog.userId});
+
+    if (!user) throwError("User not found", 404);
+
+    blog = {
+      ...blog._doc,
+      userName: user.name,
+      userProfile: user.photoURL,
+    };
 
     res.json(blog);
   } catch (error) {
