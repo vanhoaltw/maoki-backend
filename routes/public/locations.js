@@ -24,7 +24,6 @@ router.get("/", async (req, res, next) => {
       }
     });
 
-    // Convert the locationCounts object into an array of objects for easier processing
     const locationData = Object.values(locationCounts);
     res.json(locationData);
   } catch (error) {
