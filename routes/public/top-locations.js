@@ -1,24 +1,24 @@
+const router = require("express").Router();
 const Hotel = require("../../models/Hotel");
 
-const router = require("express").Router();
 router.get("/", async (req, res, next) => {
   try {
     let location = await Hotel.find();
     const locationCounts = {};
 
     location.forEach((hotel) => {
-      const locationId = hotel._id;
-      const name = hotel.address.location;
-      const thumbnailURL = hotel.address.thumbnailURL;
+      const _id = hotel._id;
+      const location = hotel.address.location;
+      const thumbnail = hotel.address.thumbnailURL;
 
-      if (locationCounts[name]) {
-        locationCounts[name].total_hotel++;
+      if (locationCounts[location]) {
+        locationCounts[location].totalHotel++;
       } else {
-        locationCounts[name] = {
-          _id: locationId,
-          name: name,
-          ThumbnailURL: thumbnailURL,
-          total_hotel: 1,
+        locationCounts[location] = {
+          _id,
+          location,
+          thumbnail,
+          totalHotel: 1,
         };
       }
     });

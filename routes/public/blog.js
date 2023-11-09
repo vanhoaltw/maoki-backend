@@ -6,7 +6,20 @@ const router = require("express").Router();
 
 router.get("/", async (req, res, next) => {
   try {
-    let blog = await Blog.find();
+    const {page = 1, limit = 10, descending = "false"} = req.query;
+
+    const parsedLimit = parseInt(limit, 10);
+    const parsedPage = parseInt(page, 10);
+
+    // Define the sort direction based on the 'descending' query parameter
+    const sortDirection = descending === "true" ? -1 : 1;
+
+    const skip = (parsedPage - 1) * parsedLimit;
+
+    let blog = await Blog.find()
+      .sort({createdAt: sortDirection})
+      .skip(skip)
+      .limit(parsedLimit);
 
     if (blog.length == 0) throwError("Blog not found", 404);
 

@@ -7,6 +7,7 @@ router.post("/", hotelController.postHotel);
 
 router.put("/", hotelController.updateHotel);
 
-router.delete("/", hotelController.deleteHotel);
+// TODO: don't need hotel delete at this moment
+// router.delete("/", hotelController.deleteHotel);
 
 module.exports = router;
