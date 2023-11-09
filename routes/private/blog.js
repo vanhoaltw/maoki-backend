@@ -5,23 +5,7 @@ const throwError = require("../../utils/throwError");
 
 const router = require("express").Router();
 
-router.get("/:id", async (req, res, next) => {
-  try {
-    const id = req.params.id;
-
-    if (!id) throwError("id is required", 404);
-
-    const blog = await Blog.findOne({_id: id});
-
-    if (!blog) throwError("Blog not found", 404);
-
-    res.json(blog);
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.get("/", async (req, res, next) => {
+router.get("/user-blog", async (req, res, next) => {
   try {
     const blog = await Blog.find({userId: req.user._id});
 
@@ -33,7 +17,7 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-router.post("/", async (req, res, next) => {
+router.post("/user-blog", async (req, res, next) => {
   try {
     const data = req.body;
 
@@ -55,6 +39,22 @@ router.post("/", async (req, res, next) => {
     await newBlog.save();
 
     res.json({message: "Blog created successfully!"});
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/:id", async (req, res, next) => {
+  try {
+    const id = req.params.id;
+
+    if (!id) throwError("id is required", 404);
+
+    const blog = await Blog.findOne({_id: id});
+
+    if (!blog) throwError("Blog not found", 404);
+
+    res.json(blog);
   } catch (error) {
     next(error);
   }
