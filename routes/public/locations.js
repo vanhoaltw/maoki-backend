@@ -5,15 +5,27 @@ const router = require("express").Router();
 router.get("/", async (req, res, next) => {
   try {
     let location = await Hotel.find();
+    const locationCounts = {};
 
-    location = location.map((singleLocation) => {
-      return {
-        _id: singleLocation._id,
-        address: singleLocation.address.location,
-      };
+    location.forEach((hotel) => {
+      const locationId = hotel._id;
+      const name = hotel.address.location;
+      const thumbnailURL = hotel.address.thumbnailURL;
+
+      if (locationCounts[name]) {
+        locationCounts[name].total_hotel++;
+      } else {
+        locationCounts[name] = {
+          _id: locationId,
+          name: name,
+          ThumbnailURL: thumbnailURL,
+          total_hotel: 1,
+        };
+      }
     });
 
-    res.json(location);
+    const locationData = Object.values(locationCounts);
+    res.json(locationData);
   } catch (error) {
     next(error);
   }
