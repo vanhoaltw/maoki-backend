@@ -35,33 +35,30 @@ router.get("/:id", async (req, res, next) => {
 //   }
 // });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", async (req, res, next) => {
   try {
     const id = req.params.id;
-    const { name, photoURL, newPassword, phone } = req.body;
+    const { name, photoURL, phone } = req.body;
 
-    const result = await User.updateOne(
+    const result = await User.findOneAndUpdate(
       { _id: id },
       {
         $set: {
           name: name,
           photoURL: photoURL,
-          password: newPassword,
           phone: phone,
         },
       }
     );
 
-    result.json(result);
-    if (result.nModified > 0) {
-      res.json({ success: true, message: "User updated successfully" });
-    } else {
-      res.status(404).json({ success: false, message: "User not found" });
-    }
+    res.json(result);
+    // if (result.Modified > 0) {
+    //   res.json({ success: true, message: "User updated successfully" });
+    // } else {
+    //   res.status(404).json({ success: false, message: "User not found" });
+    // }
   } catch (error) {
-    res.status(500).json({
-      error: "Error in updating user",
-    });
+    next(error);
   }
 });
 
