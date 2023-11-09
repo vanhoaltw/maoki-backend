@@ -6,7 +6,7 @@ const router = require("express").Router();
 
 router.get("/", async (req, res, next) => {
   try {
-    let blog = await Blog.find();
+    let blog = await Blog.find().sort({createdAt: -1});
 
     if (blog.length == 0) throwError("Blog not found", 404);
 
