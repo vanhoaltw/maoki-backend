@@ -9,7 +9,8 @@ router.get("/", async (req, res, next) => {
     location = location.map((singleLocation) => {
       return {
         _id: singleLocation._id,
-        address: singleLocation.address.location,
+        name: singleLocation.address.location,
+        thumbnail: singleLocation.address.thumbnailURL,
       };
     });
 
