@@ -124,9 +124,22 @@ router.post("/user-blog", async (req, res, next) => {
 /******** BLOG BOOKMARK ******* */
 router.get("/bookmark", async (req, res, next) => {
   try {
-    const bookmark = await BlogBookmark.find({userId: req.user._id});
+    let bookmark = await BlogBookmark.find({userId: req.user._id});
 
     if (!bookmark) throwError("bookmark not found", 404);
+
+    bookmark = await Promise.all(
+      bookmark.map(async (singleBookmark) => {
+        const blog = await Blog.findById(singleBookmark.blogId);
+        return {
+          _id: singleBookmark._id,
+          blogId: singleBookmark.blogId,
+          blogTitle: blog.title || "",
+          blogThumbnail: blog.thumbnail || "",
+        };
+      })
+    );
+    bookmark = bookmark.filter((bookmark) => bookmark !== null);
 
     res.json(bookmark);
   } catch (error) {

@@ -1,4 +1,6 @@
 const router = require("express").Router();
+const Hotel = require("../../models/Hotel");
+const Room = require("../../models/Room");
 const Wishlist = require("../../models/Wishlist");
 const throwError = require("../../utils/throwError");
 
@@ -29,9 +31,26 @@ router.delete("/:id", async (req, res, next) => {
 
 router.get("/", async (req, res, next) => {
   try {
-    const wishlist = await Wishlist.find({userId: req.user._id});
+    let wishlist = await Wishlist.find({userId: req.user._id});
 
     if (!wishlist) throwError("wishlist not found", 404);
+
+    wishlist = await Promise.all(
+      wishlist.map(async (singleWishlist) => {
+        const room = await Room.findById(singleWishlist.roomId);
+
+        return {
+          _id: singleWishlist._id,
+          roomId: singleWishlist.roomId,
+          roomTitle: singleWishlist._id
+            ? (await Room.findById(singleWishlist.roomId)).title
+            : "",
+          hotelName: room.hotelId
+            ? (await Hotel.findById(room.hotelId)).name
+            : "",
+        };
+      })
+    );
 
     res.json(wishlist);
   } catch (error) {
