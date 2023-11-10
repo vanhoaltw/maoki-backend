@@ -1,4 +1,5 @@
 const Blog = require("../../models/Blog");
+const BlogBookmark = require("../../models/BlogBookmark");
 const User = require("../../models/User");
 const isFieldsRequired = require("../../utils/isFieldsRequired");
 const throwError = require("../../utils/throwError");
@@ -115,6 +116,70 @@ router.post("/user-blog", async (req, res, next) => {
     await newBlog.save();
 
     res.json({message: "Blog created successfully!"});
+  } catch (error) {
+    next(error);
+  }
+});
+
+/******** BLOG BOOKMARK ******* */
+router.get("/bookmark", async (req, res, next) => {
+  try {
+    const bookmark = await BlogBookmark.find({userId: req.user._id});
+
+    if (!bookmark) throwError("bookmark not found", 404);
+
+    res.json(bookmark);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/bookmark", async (req, res, next) => {
+  try {
+    const blogId = req.body.blogId;
+
+    if (!blogId) {
+      throwError("blogId must be provide", 404);
+    }
+
+    const existingBookmark = await BlogBookmark.findOne({
+      blogId,
+      userId: req.user._id,
+    });
+
+    if (existingBookmark) {
+      throwError("Bookmark already saved", 409);
+    }
+
+    const newBookmark = new BlogBookmark({blogId, userId: req.user._id});
+    await newBookmark.save();
+
+    res.json({message: "Bookmark saved successfully"});
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.delete("/bookmark/:id", async (req, res, next) => {
+  try {
+    const id = req.params.id;
+
+    if (!id) {
+      throwError("id must be provide");
+    }
+
+    const existingBookmark = await BlogBookmark.findOne({
+      userId: req.user._id,
+      $or: [{blogId: id}, {_id: id}],
+    });
+
+    if (!existingBookmark) throwError("Bookmark not found");
+
+    const bookmark = await BlogBookmark.findByIdAndDelete(existingBookmark._id);
+
+    if (!bookmark) throwError("Bookmark not delete");
+
+    res.json({message: "Bookmark deleted successfully"});
   } catch (error) {
     next(error);
   }
