@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const User = require("../../models/User");
 const throwError = require("../../utils/throwError");
+const bcrypt = require("bcrypt");
 
 router.get("/:id", async (req, res, next) => {
   try {
@@ -26,22 +27,36 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-// router.put("/:id", (req, res, next) => {
-//   try {
-//     const id = req.params.id;
-//     res.json("put id" + id);
-//   } catch (error) {
-//     next(error);
-//   }
-// });
-
 router.put("/:id", async (req, res, next) => {
   try {
     const id = req.params.id;
-    const { name, photoURL, phone } = req.body;
+
+    const data = req.body;
+
+    const {
+      name,
+      phone,
+      photoURL,
+      currentPassword,
+      newPassword,
+      confirmNewPassword,
+    } = data;
+
+    const existingUser = await User.findById(req.user._id);
+    if (!existingUser) throwError("User not found", 404);
+
+    if (existingUser.password) {
+    }
+
+    const isMatchPassword = await bcrypt.compare(
+      data.currentPassword,
+      existingUser.password
+    );
+
+    if (!isMatchPassword) throwError("Invalid old password", 404);
 
     const result = await User.findOneAndUpdate(
-      { _id: id },
+      {_id: id},
       {
         $set: {
           name: name,
@@ -52,11 +67,6 @@ router.put("/:id", async (req, res, next) => {
     );
 
     res.json(result);
-    // if (result.Modified > 0) {
-    //   res.json({ success: true, message: "User updated successfully" });
-    // } else {
-    //   res.status(404).json({ success: false, message: "User not found" });
-    // }
   } catch (error) {
     next(error);
   }
