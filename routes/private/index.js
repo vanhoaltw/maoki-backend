@@ -4,13 +4,13 @@ const bookingRoutes = require("./booking");
 const blogRoutes = require("./blog");
 const wishlistRoutes = require("./wishlist");
 const profileRoutes = require("./profile");
-const paymentRoutes = require("./payment");
+const roomRoutes = require("./room");
 
 router.use("/user", userRoutes);
+router.use("/room", roomRoutes);
 router.use("/booking", bookingRoutes);
-router.use("/blog", blogRoutes);
 router.use("/wishlist", wishlistRoutes);
+router.use("/blog", blogRoutes);
 router.use("/profile", profileRoutes);
-router.use("/payment", paymentRoutes);
 
 module.exports = router;
