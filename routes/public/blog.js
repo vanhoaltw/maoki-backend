@@ -6,7 +6,7 @@ const router = require("express").Router();
 
 router.get("/", async (req, res, next) => {
   try {
-    const {page = 1, limit = 10, descending = "false"} = req.query;
+    const { page = 1, limit = 10, descending = "false" } = req.query;
 
     const parsedLimit = parseInt(limit, 10);
     const parsedPage = parseInt(page, 10);
@@ -17,7 +17,7 @@ router.get("/", async (req, res, next) => {
     const skip = (parsedPage - 1) * parsedLimit;
 
     let blog = await Blog.find()
-      .sort({createdAt: sortDirection})
+      .sort({ createdAt: sortDirection })
       .skip(skip)
       .limit(parsedLimit);
 
@@ -35,6 +35,7 @@ router.get("/", async (req, res, next) => {
           publishDate: singleBlog.createdAt,
           userId: user._id,
           userName: user.name,
+          category: singleBlog.category,
           userProfile: user.photoURL,
         };
       })
