@@ -52,7 +52,14 @@ router.get("/", async (req, res, next) => {
 
       const skip = (page - 1) * limit;
 
-      hotel = await Hotel.find().skip(skip).limit(limit);
+      hotel = await Hotel.find().skip(skip).limit(limit).exec();
+      const count = await Hotel.countDocuments();
+
+      res.json({
+        totalPages: Math.ceil(count / limit),
+        currentPage: page,
+        data: hotel,
+      });
     }
 
     if (query.checkIn || query.checkOut) {
@@ -86,7 +93,7 @@ router.get("/", async (req, res, next) => {
 
     if (hotel.length == 0) throwError("Hotel not found!", 404);
 
-    res.json(hotel);
+    res.json({data: hotel});
   } catch (error) {
     next(error);
   }
