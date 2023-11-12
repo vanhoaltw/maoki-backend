@@ -13,6 +13,6 @@ const blogLikeSchema = new Schema({
   },
 });
 
-const BlogLike = model("Blog", blogLikeSchema);
+const BlogLike = model("BlogLike", blogLikeSchema);
 
 module.exports = BlogLike;

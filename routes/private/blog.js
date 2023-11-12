@@ -1,6 +1,8 @@
 const Blog = require("../../models/Blog");
 const BlogBookmark = require("../../models/BlogBookmark");
+const BlogLike = require("../../models/BlogLike");
 const User = require("../../models/User");
+const changesDetected = require("../../utils/changesDetected");
 const isFieldsRequired = require("../../utils/isFieldsRequired");
 const throwError = require("../../utils/throwError");
 const router = require("express").Router();
@@ -8,7 +10,6 @@ const router = require("express").Router();
 router.get("/user-blog/:id", async (req, res, next) => {
   try {
     const id = req.params.id;
-
     if (!id) throwError("id is required", 404);
 
     const blog = await Blog.findOne({_id: id, userId: req.user._id});
@@ -32,15 +33,8 @@ router.put("/user-blog/:id", async (req, res, next) => {
 
     if (!existingBlog) throwError("Blog not found", 404);
 
-    // Compare the existing data with the new data
-    const dataIsSame =
-      JSON.stringify(existingBlog.toObject()) ===
-      JSON.stringify({...existingBlog.toObject(), ...data});
-
-    if (dataIsSame) {
-      return res
-        .status(400)
-        .json({message: "No changes to apply, user data is the same."});
+    if (changesDetected(existingBlog, data)) {
+      throwError("No changes to apply, user data is the same.", 404);
     }
 
     await Blog.findOneAndUpdate(
@@ -62,7 +56,6 @@ router.put("/user-blog/:id", async (req, res, next) => {
 router.delete("/user-blog/:id", async (req, res, next) => {
   try {
     const id = req.params.id;
-
     if (!id) throwError("id is required", 404);
 
     const existingBlog = await Blog.findOne({_id: id, userId: req.user._id});
@@ -176,10 +169,7 @@ router.post("/bookmark", async (req, res, next) => {
 router.delete("/bookmark/:id", async (req, res, next) => {
   try {
     const id = req.params.id;
-
-    if (!id) {
-      throwError("id must be provide");
-    }
+    if (!id) throwError("id must be provide");
 
     const existingBookmark = await BlogBookmark.findOne({
       userId: req.user._id,
@@ -198,10 +188,73 @@ router.delete("/bookmark/:id", async (req, res, next) => {
   }
 });
 
+router.get("/liked", async (req, res, next) => {
+  try {
+    let likedBlog = await BlogLike.find({userId: req.user._id});
+
+    likedBlog = likedBlog.map((liked) => liked.blogId);
+
+    res.json(likedBlog);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/:id/like", async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    if (!id) throwError("id is required", 404);
+
+    const existingBlog = await Blog.findById(id);
+    if (!existingBlog) throwError("Blog not found", 404);
+
+    const existingLike = await BlogLike.findOne({
+      blogId: id,
+      userId: req.user._id,
+    }).exec();
+
+    if (existingLike) throwError("Already liked", 404);
+
+    const blogLike = BlogLike({blogId: id, userId: req.user._id});
+    await blogLike.save();
+
+    existingBlog.likeCount += 1;
+    await existingBlog.save();
+
+    res.json({message: "Liked successfully"});
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/:id/unlike", async (req, res, next) => {
+  // unlike means if already liked then remove like
+  try {
+    const id = req.params.id;
+    if (!id) throwError("id is required", 404);
+
+    const existingBlog = await Blog.findById(id);
+    if (!existingBlog) throwError("Blog not found", 404);
+
+    const result = await BlogLike.findOneAndDelete({
+      blogId: id,
+      userId: req.user._id,
+    });
+
+    if (!result) throwError("Like not found", 404);
+
+    existingBlog.likeCount -= 1;
+    await existingBlog.save();
+
+    res.json({message: "Like removed successfully"});
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.get("/:id", async (req, res, next) => {
   try {
     const id = req.params.id;
-
     if (!id) throwError("id is required", 404);
 
     let blog = await Blog.findOne({_id: id});
