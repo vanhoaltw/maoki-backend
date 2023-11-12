@@ -6,7 +6,7 @@ const router = require("express").Router();
 
 router.get("/", async (req, res, next) => {
   try {
-    const { page = 1, limit = 10, descending = "false" } = req.query;
+    const {page = 1, limit = 10, descending = "false"} = req.query;
 
     const parsedLimit = parseInt(limit, 10);
     const parsedPage = parseInt(page, 10);
@@ -17,9 +17,11 @@ router.get("/", async (req, res, next) => {
     const skip = (parsedPage - 1) * parsedLimit;
 
     let blog = await Blog.find()
-      .sort({ createdAt: sortDirection })
+      .sort({createdAt: sortDirection})
       .skip(skip)
       .limit(parsedLimit);
+
+    const count = await Blog.countDocuments();
 
     if (blog.length == 0) throwError("Blog not found", 404);
 
@@ -41,7 +43,11 @@ router.get("/", async (req, res, next) => {
       })
     );
 
-    res.json(blog);
+    res.json({
+      totalPages: Math.ceil(count / limit),
+      currentPage: page,
+      data: blog,
+    });
   } catch (error) {
     next(error);
   }
