@@ -227,7 +227,7 @@ router.post("/:id/like", async (req, res, next) => {
   }
 });
 
-router.post("/:id/unlike", async (req, res, next) => {
+router.delete("/:id/unlike", async (req, res, next) => {
   // unlike means if already liked then remove like
   try {
     const id = req.params.id;
