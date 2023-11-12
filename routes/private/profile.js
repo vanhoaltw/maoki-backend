@@ -29,6 +29,17 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
+router.get("/", async (req, res, next) => {
+  try {
+    const existingUser = await User.findById(req.user._id);
+    if (!existingUser) throwError("You are not found", 404);
+
+    res.json(existingUser);
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.put("/", async (req, res, next) => {
   try {
     const data = req.body;
