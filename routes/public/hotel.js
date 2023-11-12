@@ -41,21 +41,25 @@ router.get("/:id", async (req, res, next) => {
 router.get("/", async (req, res, next) => {
   try {
     const query = req.query;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const skip = (page - 1) * limit;
 
     let hotel = [];
 
+    let count = 0;
+
     if (query.location) {
-      hotel = await Hotel.find({"address.location": query.location});
+      hotel = await Hotel.find({"address.location": query.location})
+        .skip(skip)
+        .limit(limit)
+        .exec();
+      count = await Hotel.countDocuments({"address.location": query.location});
     } else {
-      const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 10;
-
-      const skip = (page - 1) * limit;
-
       hotel = await Hotel.find().skip(skip).limit(limit).exec();
-      const count = await Hotel.countDocuments();
-
-      res.json({
+      count = await Hotel.countDocuments();
+      return res.json({
         totalPages: Math.ceil(count / limit),
         currentPage: page,
         data: hotel,
@@ -93,7 +97,11 @@ router.get("/", async (req, res, next) => {
 
     if (hotel.length == 0) throwError("Hotel not found!", 404);
 
-    res.json({data: hotel});
+    res.json({
+      totalPages: Math.ceil(count / limit),
+      currentPage: page,
+      data: hotel,
+    });
   } catch (error) {
     next(error);
   }
