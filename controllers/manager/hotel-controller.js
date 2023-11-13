@@ -77,6 +77,7 @@ const updateHotel = async (req, res, next) => {
     next(error);
   }
 };
+
 const deleteHotel = async (req, res, next) => {
   try {
     const existingHotel = await Hotel.findOne({managerId: req.user._id});
