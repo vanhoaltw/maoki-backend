@@ -14,9 +14,19 @@ const getById = (req, res, next) => {
   }
 };
 
-const updateById = (req, res, next) => {
+const updateById = async (req, res, next) => {
   try {
-    res.json("room updateById");
+    const id = req.params.id;
+    if (!id) throwError("id is required");
+
+    const data = req.body;
+
+    const existingRoom = await Room.findById(id);
+    if (!existingRoom) throwError("Room does not exist");
+
+    await Room.findByIdAndUpdate({_id: existingRoom._id}, data);
+
+    res.json({message: "Room updated successfully."});
   } catch (error) {
     next(error);
   }
