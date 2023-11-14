@@ -34,11 +34,13 @@ const roomSchema = new Schema({
       type: Number,
       required: [true, "Adult capacity is required"],
       min: [0, "Adult capacity cannot be negative"],
+      max: [6, "max capacity 6"],
     },
     children: {
       type: Number,
       required: [true, "children capacity is required"],
       min: [0, "children capacity cannot be negative"],
+      max: [6, "max capacity 6"],
     },
   },
   roomInfo: {

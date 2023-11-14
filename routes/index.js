@@ -9,6 +9,7 @@ const adminRoutes = require("./admin");
 const managerRoutes = require("./manager");
 const privateRoutes = require("./private");
 const publicRoutes = require("./public");
+const paymentRoutes = require("./payment");
 
 router.use("/auth", authRoutes);
 
@@ -16,6 +17,7 @@ router.use("/admin", authenticate, isAdmin, adminRoutes);
 router.use("/manager", authenticate, isManager, managerRoutes);
 
 router.use("/public", publicRoutes);
+router.use("/payment", paymentRoutes);
 
 router.use("/", authenticate, privateRoutes);
 
