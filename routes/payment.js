@@ -89,10 +89,9 @@ router.post("/order", async (req, res) => {
 
 router.post("/success", async (req, res) => {
   const data = req.body;
-  res.json(data);
 
   const existingPayment = await Payment.findOne({
-    transactionId: data.tran_id,
+    transactionId: data?.tran_id,
   }).exec();
 
   if (!existingPayment) {
@@ -101,18 +100,18 @@ router.post("/success", async (req, res) => {
   }
 
   const updatedPayment = await Payment.findOneAndUpdate(
-    {transactionId: data.tran_id},
+    {transactionId: data?.tran_id},
     {
       $set: {
-        status: data.status,
-        cardType: data.card_type,
+        status: data?.status,
+        cardType: data?.card_type,
       },
     },
     {new: true}
   );
 
   if (updatedPayment.status != "VALID") {
-    await Payment.findOneAndDelete({transactionId: data.tran_id});
+    await Payment.findOneAndDelete({transactionId: data?.tran_id});
     throwError("Payment not success");
   }
 
