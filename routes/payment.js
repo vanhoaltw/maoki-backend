@@ -64,8 +64,6 @@ router.post("/order", async (req, res) => {
 
   paymentData.save();
 
-  console.log(paymentData);
-
   res.json(apiResponse.GatewayPageURL);
 });
 
@@ -82,7 +80,7 @@ router.post("/success", async (req, res) => {
   }
 
   const updatedPayment = await Payment.findOneAndUpdate(
-    {transactionId: tran_id},
+    {transactionId: data.tran_id},
     {
       $set: {
         status: data.status,
@@ -97,7 +95,7 @@ router.post("/success", async (req, res) => {
     throwError("Payment not success");
   }
 
-  res.redirect("http://localhost:5173/");
+  res.redirect(`${process.env.ROOT_FRONTEND}/payment/success`);
 });
 
 const deletePaymentAndRedirect = async (req, res, next, status) => {
@@ -107,17 +105,17 @@ const deletePaymentAndRedirect = async (req, res, next, status) => {
 
     switch (status) {
       case "fail":
-        res.redirect("http://localhost:5173/fail");
+        res.redirect(`${process.env.ROOT_FRONTEND}/payment/fail`);
         break;
       case "cancel":
-        res.redirect("http://localhost:5173/cancel");
+        res.redirect(`${process.env.ROOT_FRONTEND}/payment/cancel`);
         break;
       case "ipn":
-        res.redirect("http://localhost:5173/ipn");
+        res.redirect(`${process.env.ROOT_FRONTEND}/payment/fail`);
         break;
 
       default:
-        res.redirect("http://localhost:5173/");
+        res.redirect(`${process.env.ROOT_FRONTEND}/payment/fail`);
         break;
     }
   } catch (error) {
