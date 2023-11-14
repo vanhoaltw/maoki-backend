@@ -17,17 +17,28 @@ router.post("/order", async (req, res) => {
   const email = data[0].email;
   const phoneNumber = data[0].phoneNumber;
 
+  const fetchPrices = data.map(async (item) => {
+    const room = await Room.findById(item.roomId);
+    if (room && room.roomInfo && room.roomInfo.discountedPrice) {
+      return room.roomInfo.discountedPrice;
+    }
+    return 0;
+  });
+
+  const resolvedPrices = await Promise.all(fetchPrices);
+  const totalAmount = resolvedPrices.reduce((acc, price) => acc + price, 0);
+
   // remove email, phoneNumber
   data = data.map(({email, phoneNumber, ...rest}) => rest);
 
   const sslData = {
     tran_id: TRANSACTION_ID, // use unique tran_id for each api call
-    total_amount: 100,
+    total_amount: totalAmount,
     currency: "BDT",
-    success_url: "http://localhost:3000/payment/success",
-    fail_url: "http://localhost:3000/payment/fail",
-    cancel_url: "http://localhost:3000/payment/cancel",
-    ipn_url: "http://localhost:3000/payment/ipn",
+    success_url: `${process.env.ROOT_BACKEND}/payment/success`,
+    fail_url: `${process.env.ROOT_BACKEND}/payment/fail`,
+    cancel_url: `${process.env.ROOT_BACKEND}/payment/cancel`,
+    ipn_url: `${process.env.ROOT_BACKEND}/payment/ipn`,
     shipping_method: "Online",
     product_name: "Room Booking.",
     product_category: "Room",
@@ -56,7 +67,7 @@ router.post("/order", async (req, res) => {
     email: email,
     rooms: data,
     phoneNumber: phoneNumber,
-    totalAmount: 500,
+    totalAmount: totalAmount,
   });
 
   for (const room of data) {
