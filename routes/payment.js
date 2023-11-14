@@ -95,7 +95,7 @@ router.post("/success", async (req, res) => {
   }).exec();
 
   if (!existingPayment) {
-    await Payment.findOneAndDelete({transactionId: tran_id});
+    await Payment.findOneAndDelete({transactionId: data?.tran_id});
     throwError("Payment not found");
   }
 
