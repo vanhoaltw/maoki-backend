@@ -89,6 +89,7 @@ router.post("/order", async (req, res) => {
 
 router.post("/success", async (req, res) => {
   const data = req.body;
+  res.json(data);
 
   const existingPayment = await Payment.findOne({
     transactionId: data.tran_id,
