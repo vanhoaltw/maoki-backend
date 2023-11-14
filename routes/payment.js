@@ -3,6 +3,7 @@ const router = require("express").Router();
 const SSLCommerzPayment = require("sslcommerz-lts");
 const throwError = require("../utils/throwError");
 const Payment = require("../models/Payment");
+const Room = require("../models/Room");
 const store_id = "sslco654e18d87915b";
 const store_passwd = "sslco654e18d87915b@ssl";
 const is_live = false;
@@ -58,6 +59,14 @@ router.post("/order", async (req, res) => {
     totalAmount: 500,
   });
 
+  for (const room of data) {
+    await Room.findByIdAndUpdate(room.roomId, {
+      "availability.checkIn": room.checkIn,
+      "availability.checkOut": room.checkOut,
+      "availability.isBlocked": true,
+    });
+  }
+
   const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live);
   const apiResponse = await sslcz.init(sslData);
   if (!apiResponse) throwError("Couldn't initialize SSLCommerzPayment");
@@ -101,6 +110,16 @@ router.post("/success", async (req, res) => {
 const deletePaymentAndRedirect = async (req, res, next, status) => {
   const {tran_id} = req.body;
   try {
+    const {rooms} = await Payment.findOne({transactionId: tran_id});
+
+    for (const room of rooms) {
+      await Room.findByIdAndUpdate(room.roomId, {
+        "availability.checkIn": null,
+        "availability.checkOut": null,
+        "availability.isBlocked": false,
+      });
+    }
+
     await Payment.findOneAndDelete({transactionId: tran_id});
 
     switch (status) {
