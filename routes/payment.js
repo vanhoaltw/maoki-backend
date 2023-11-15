@@ -153,7 +153,11 @@ const deletePaymentAndRedirect = async (req, res, next, status) => {
     const payment = await Payment.findOne({transactionId: data?.tran_id});
 
     if (!payment) {
-      throwError("Payment not found for the provided transactionId", 404);
+      throwError(
+        "Payment not found for the provided transactionId " +
+          JSON.stringify(data),
+        404
+      );
     }
 
     const {rooms} = payment;
