@@ -138,7 +138,7 @@ router.get("/success/:transactionId", async (req, res, next) => {
 
     res.json(payment);
   } catch (error) {
-    next();
+    next(error);
   }
 });
 
