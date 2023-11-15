@@ -89,34 +89,40 @@ router.post("/order", async (req, res) => {
 });
 
 router.post("/success", async (req, res) => {
-  const data = req.body;
+  try {
+    const data = req.body;
 
-  const existingPayment = await Payment.findOne({
-    transactionId: data?.tran_id,
-  }).exec();
+    const existingPayment = await Payment.findOne({
+      transactionId: data?.tran_id,
+    }).exec();
 
-  if (!existingPayment) {
-    await Payment.findOneAndDelete({transactionId: data?.tran_id});
-    throwError("Payment not found");
-  }
+    if (!existingPayment) {
+      await Payment.findOneAndDelete({transactionId: data?.tran_id});
+      throwError("Payment not found");
+    }
 
-  const updatedPayment = await Payment.findOneAndUpdate(
-    {transactionId: data?.tran_id},
-    {
-      $set: {
-        status: data?.status,
-        cardType: data?.card_type,
+    const updatedPayment = await Payment.findOneAndUpdate(
+      {transactionId: data?.tran_id},
+      {
+        $set: {
+          status: data?.status,
+          cardType: data?.card_type,
+        },
       },
-    },
-    {new: true}
-  );
+      {new: true}
+    );
 
-  if (updatedPayment.status != "VALID") {
-    await Payment.findOneAndDelete({transactionId: data?.tran_id});
-    throwError("Payment not success");
+    if (updatedPayment.status != "VALID") {
+      await Payment.findOneAndDelete({transactionId: data?.tran_id});
+      throwError("Payment not success");
+    }
+
+    res.redirect(
+      `${process.env.ROOT_FRONTEND}/payment/success/${data?.tran_id}`
+    );
+  } catch (error) {
+    next(error);
   }
-
-  res.redirect(`${process.env.ROOT_FRONTEND}/payment/success/${data?.tran_id}`);
 });
 
 router.get("/success/:transactionId", async (req, res, next) => {
