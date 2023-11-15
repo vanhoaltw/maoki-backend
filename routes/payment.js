@@ -148,10 +148,9 @@ router.get("/success/:transactionId", async (req, res, next) => {
 });
 
 const deletePaymentAndRedirect = async (req, res, next, status) => {
-  const {tran_id} = req.body;
-  res.json(req.body);
+  const data = req.body;
   try {
-    const payment = await Payment.findOne({transactionId: tran_id});
+    const payment = await Payment.findOne({transactionId: data?.tran_id});
 
     if (!payment) {
       throwError("Payment not found for the provided transactionId", 404);
@@ -168,7 +167,7 @@ const deletePaymentAndRedirect = async (req, res, next, status) => {
       });
     }
 
-    await Payment.findOneAndDelete({transactionId: tran_id});
+    await Payment.findOneAndDelete({transactionId: data?.tran_id});
 
     switch (status) {
       case "fail":
