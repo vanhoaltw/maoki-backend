@@ -103,7 +103,7 @@ router.post("/success", async (req, res, next) => {
     }).exec();
 
     if (!existingPayment) {
-      throwError("Payment not found");
+      throwError("Payment not found" + JSON.stringify({data, existingPayment}));
     }
 
     const updatedPayment = await Payment.findOneAndUpdate(
@@ -116,6 +116,7 @@ router.post("/success", async (req, res, next) => {
       },
       {new: true}
     );
+    console.log(updatedPayment);
 
     if (updatedPayment && updatedPayment.status != "VALID") {
       await Payment.findOneAndDelete({transactionId: data?.tran_id});
@@ -150,7 +151,9 @@ router.get("/success/:transactionId", async (req, res, next) => {
 const deletePaymentAndRedirect = async (req, res, next, status) => {
   const data = req.body;
   try {
-    const payment = await Payment.findOne({transactionId: data?.tran_id});
+    const payment = await Payment.findOne({
+      transactionId: data?.tran_id,
+    }).exec();
 
     if (!payment) {
       throwError(
