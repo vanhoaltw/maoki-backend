@@ -102,6 +102,8 @@ router.post("/success", async (req, res, next) => {
       transactionId: data?.tran_id,
     }).exec();
 
+    return res.json({data, existingPayment});
+
     if (!existingPayment) {
       throwError("Payment not found" + JSON.stringify({data, existingPayment}));
     }
