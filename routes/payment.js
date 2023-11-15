@@ -155,7 +155,8 @@ const deletePaymentAndRedirect = async (req, res, next, status) => {
     if (!payment) {
       throwError(
         "Payment not found for the provided transactionId " +
-          JSON.stringify(data),
+          JSON.stringify(data) +
+          JSON.stringify(payment),
         404
       );
     }
