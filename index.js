@@ -1,4 +1,5 @@
 require("dotenv").config();
+const {roomsAvailabilityChecking} = require("./cron-jobs");
 const express = require("express");
 const cors = require("cors");
 const app = express();
@@ -29,6 +30,9 @@ app.use((err, req, res, next) => {
 connectDB(URI)
   .then(() => {
     console.log("Database connection established!");
+
+    // every time checking rooms Availability and run every 5mins
+    roomsAvailabilityChecking.start();
 
     // when mongodb connection is established the app will run.
     app.listen(port, () => {
