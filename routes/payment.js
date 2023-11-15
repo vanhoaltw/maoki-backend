@@ -149,7 +149,7 @@ router.get("/success/:transactionId", async (req, res, next) => {
 
 const deletePaymentAndRedirect = async (req, res, next, status) => {
   const {tran_id} = req.body;
-  res.json(res.body);
+  res.json(req.body);
   try {
     const payment = await Payment.findOne({transactionId: tran_id});
 
