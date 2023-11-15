@@ -103,7 +103,7 @@ router.post("/success", async (req, res, next) => {
     }).exec();
 
     if (!existingPayment) {
-      throwError("Payment not found");
+      throwError("Payment not found", 404);
     }
 
     const updatedPayment = await Payment.findOneAndUpdate(
@@ -120,7 +120,7 @@ router.post("/success", async (req, res, next) => {
 
     if (updatedPayment && updatedPayment.status != "VALID") {
       await Payment.findOneAndDelete({transactionId: data?.tran_id});
-      throwError("Payment not success");
+      throwError("Payment not success", 404);
     }
 
     res.redirect(
@@ -207,7 +207,6 @@ router.post("/cancel", async (req, res, next) => {
 
 router.post("/ipn", async (req, res, next) => {
   res.json("ping");
-  // await deletePaymentAndRedirect(req, res, next, "ipn");
 });
 
 module.exports = router;
