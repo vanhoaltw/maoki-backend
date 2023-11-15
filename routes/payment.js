@@ -172,7 +172,7 @@ const deletePaymentAndRedirect = async (req, res, next, status) => {
       });
     }
 
-    await Payment.findOneAndDelete({transactionId: data?.tran_id});
+    // await Payment.findOneAndDelete({transactionId: data?.tran_id});
 
     switch (status) {
       case "fail":
