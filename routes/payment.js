@@ -88,7 +88,7 @@ router.post("/order", async (req, res) => {
   res.json(apiResponse.GatewayPageURL);
 });
 
-router.post("/success", async (req, res) => {
+router.post("/success", async (req, res, next) => {
   try {
     const data = req.body;
 
