@@ -83,7 +83,7 @@ router.post("/order", async (req, res) => {
   const apiResponse = await sslcz.init(sslData);
   if (!apiResponse) throwError("Couldn't initialize SSLCommerzPayment");
 
-  paymentData.save();
+  await paymentData.save();
 
   res.json(apiResponse.GatewayPageURL);
 });
