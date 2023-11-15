@@ -103,7 +103,6 @@ router.post("/success", async (req, res, next) => {
     }).exec();
 
     if (!existingPayment) {
-      await Payment.findOneAndDelete({transactionId: data?.tran_id});
       throwError("Payment not found");
     }
 
@@ -118,7 +117,7 @@ router.post("/success", async (req, res, next) => {
       {new: true}
     );
 
-    if (updatedPayment.status != "VALID") {
+    if (updatedPayment && updatedPayment.status != "VALID") {
       await Payment.findOneAndDelete({transactionId: data?.tran_id});
       throwError("Payment not success");
     }
@@ -151,7 +150,13 @@ router.get("/success/:transactionId", async (req, res, next) => {
 const deletePaymentAndRedirect = async (req, res, next, status) => {
   const {tran_id} = req.body;
   try {
-    const {rooms} = await Payment.findOne({transactionId: tran_id});
+    const payment = await Payment.findOne({transactionId: tran_id});
+
+    if (!payment) {
+      throwError("Payment not found for the provided transactionId", 404);
+    }
+
+    const {rooms} = payment;
 
     for (const room of rooms) {
       await Room.findByIdAndUpdate(room.roomId, {
