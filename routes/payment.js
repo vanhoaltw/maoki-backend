@@ -115,7 +115,24 @@ router.post("/success", async (req, res) => {
     throwError("Payment not success");
   }
 
-  res.redirect(`${process.env.ROOT_FRONTEND}/payment/success`);
+  res.redirect(`${process.env.ROOT_FRONTEND}/payment/success/${data?.tran_id}`);
+});
+
+router.get("/success/:transactionId", async (req, res, next) => {
+  try {
+    const transactionId = req.params.transactionId;
+    if (!transactionId) throwError("transactionId not found", 404);
+
+    const payment = await Payment.findOne({
+      transactionId: transactionId,
+    }).exec();
+
+    if (!payment) throwError("payment not found", 404);
+
+    res.json(payment);
+  } catch (error) {
+    next();
+  }
 });
 
 const deletePaymentAndRedirect = async (req, res, next, status) => {
