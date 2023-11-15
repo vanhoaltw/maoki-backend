@@ -11,81 +11,87 @@ const is_live = false;
 const TRANSACTION_ID = new mongoose.Types.ObjectId().toString();
 
 //sslcommerz init
-router.post("/order", async (req, res) => {
-  let data = req.body; //an array
+router.post("/order", async (req, res, next) => {
+  try {
+    let data = req.body; //an array
 
-  const email = data[0].email;
-  const phoneNumber = data[0].phoneNumber;
+    const email = data[0].email;
+    const phoneNumber = data[0].phoneNumber;
 
-  const fetchPrices = data.map(async (item) => {
-    const room = await Room.findById(item.roomId);
-    if (room && room.roomInfo && room.roomInfo.discountedPrice) {
-      return room.roomInfo.discountedPrice;
-    }
-    return 0;
-  });
-
-  const resolvedPrices = await Promise.all(fetchPrices);
-  const totalAmount = resolvedPrices.reduce((acc, price) => acc + price, 0);
-
-  // remove email, phoneNumber
-  data = data.map(({email, phoneNumber, ...rest}) => rest);
-
-  const sslData = {
-    tran_id: TRANSACTION_ID, // use unique tran_id for each api call
-    total_amount: totalAmount,
-    currency: "BDT",
-    success_url: `${process.env.ROOT_BACKEND}/payment/success`,
-    fail_url: `${process.env.ROOT_BACKEND}/payment/fail`,
-    cancel_url: `${process.env.ROOT_BACKEND}/payment/cancel`,
-    ipn_url: `${process.env.ROOT_BACKEND}/payment/ipn`,
-    shipping_method: "Online",
-    product_name: "Room Booking.",
-    product_category: "Room",
-    product_profile: "general",
-    cus_name: "Customer Name",
-    cus_email: email,
-    cus_add1: "Dhaka",
-    cus_add2: "Dhaka",
-    cus_city: "Dhaka",
-    cus_state: "Dhaka",
-    cus_postcode: "1000",
-    cus_country: "Bangladesh",
-    cus_phone: phoneNumber,
-    cus_fax: "01711111111",
-    ship_name: "Customer Name",
-    ship_add1: "Dhaka",
-    ship_add2: "Dhaka",
-    ship_city: "Dhaka",
-    ship_state: "Dhaka",
-    ship_postcode: 1000,
-    ship_country: "Bangladesh",
-  };
-
-  const paymentData = new Payment({
-    transactionId: TRANSACTION_ID,
-    email: email,
-    rooms: data,
-    phoneNumber: phoneNumber,
-    totalAmount: totalAmount,
-  });
-
-  for (const room of data) {
-    await Room.findByIdAndUpdate(room.roomId, {
-      $inc: {bookedCount: 1},
-      "availability.checkIn": room.checkIn,
-      "availability.checkOut": room.checkOut,
-      "availability.isBlocked": true,
+    const fetchPrices = data.map(async (item) => {
+      const room = await Room.findById(item.roomId);
+      if (room && room.roomInfo && room.roomInfo.discountedPrice) {
+        return room.roomInfo.discountedPrice;
+      }
+      return 0;
     });
+
+    const resolvedPrices = await Promise.all(fetchPrices);
+    const totalAmount = resolvedPrices.reduce((acc, price) => acc + price, 0);
+
+    // remove email, phoneNumber
+    data = data.map(({email, phoneNumber, ...rest}) => rest);
+
+    const sslData = {
+      tran_id: TRANSACTION_ID, // use unique tran_id for each api call
+      total_amount: totalAmount,
+      currency: "BDT",
+      success_url: `${process.env.ROOT_BACKEND}/payment/success`,
+      fail_url: `${process.env.ROOT_BACKEND}/payment/fail`,
+      cancel_url: `${process.env.ROOT_BACKEND}/payment/cancel`,
+      ipn_url: `${process.env.ROOT_BACKEND}/payment/ipn`,
+      shipping_method: "Online",
+      product_name: "Room Booking.",
+      product_category: "Room",
+      product_profile: "general",
+      cus_name: "Customer Name",
+      cus_email: email,
+      cus_add1: "Dhaka",
+      cus_add2: "Dhaka",
+      cus_city: "Dhaka",
+      cus_state: "Dhaka",
+      cus_postcode: "1000",
+      cus_country: "Bangladesh",
+      cus_phone: phoneNumber,
+      cus_fax: "01711111111",
+      ship_name: "Customer Name",
+      ship_add1: "Dhaka",
+      ship_add2: "Dhaka",
+      ship_city: "Dhaka",
+      ship_state: "Dhaka",
+      ship_postcode: 1000,
+      ship_country: "Bangladesh",
+    };
+
+    const paymentData = new Payment({
+      transactionId: TRANSACTION_ID,
+      email: email,
+      rooms: data,
+      phoneNumber: phoneNumber,
+      totalAmount: totalAmount,
+    });
+
+    for (const room of data) {
+      await Room.findByIdAndUpdate(room.roomId, {
+        $inc: {bookedCount: 1},
+        "availability.checkIn": room.checkIn,
+        "availability.checkOut": room.checkOut,
+        "availability.isBlocked": true,
+      });
+    }
+
+    const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live);
+    const apiResponse = await sslcz.init(sslData);
+    if (!apiResponse) throwError("Couldn't initialize SSLCommerzPayment");
+
+    const result = await paymentData.save();
+
+    if (result) {
+      res.json(apiResponse.GatewayPageURL);
+    }
+  } catch (error) {
+    next(error);
   }
-
-  const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live);
-  const apiResponse = await sslcz.init(sslData);
-  if (!apiResponse) throwError("Couldn't initialize SSLCommerzPayment");
-
-  await paymentData.save();
-
-  res.json(apiResponse.GatewayPageURL);
 });
 
 router.post("/success", async (req, res, next) => {
