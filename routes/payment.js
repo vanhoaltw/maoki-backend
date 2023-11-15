@@ -72,6 +72,7 @@ router.post("/order", async (req, res) => {
 
   for (const room of data) {
     await Room.findByIdAndUpdate(room.roomId, {
+      $inc: {bookedCount: 1},
       "availability.checkIn": room.checkIn,
       "availability.checkOut": room.checkOut,
       "availability.isBlocked": true,
@@ -142,6 +143,7 @@ const deletePaymentAndRedirect = async (req, res, next, status) => {
 
     for (const room of rooms) {
       await Room.findByIdAndUpdate(room.roomId, {
+        $inc: {bookedCount: -1},
         "availability.checkIn": null,
         "availability.checkOut": null,
         "availability.isBlocked": false,
