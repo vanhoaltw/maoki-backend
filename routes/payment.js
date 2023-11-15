@@ -159,20 +159,20 @@ const deletePaymentAndRedirect = async (req, res, next, status) => {
           JSON.stringify(payment),
         404
       );
+    } else {
+      const {rooms} = payment;
+
+      for (const room of rooms) {
+        await Room.findByIdAndUpdate(room.roomId, {
+          $inc: {bookedCount: -1},
+          "availability.checkIn": null,
+          "availability.checkOut": null,
+          "availability.isBlocked": false,
+        });
+      }
+
+      await Payment.findOneAndDelete({transactionId: data?.tran_id});
     }
-
-    const {rooms} = payment;
-
-    for (const room of rooms) {
-      await Room.findByIdAndUpdate(room.roomId, {
-        $inc: {bookedCount: -1},
-        "availability.checkIn": null,
-        "availability.checkOut": null,
-        "availability.isBlocked": false,
-      });
-    }
-
-    // await Payment.findOneAndDelete({transactionId: data?.tran_id});
 
     switch (status) {
       case "fail":
