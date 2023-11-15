@@ -102,10 +102,8 @@ router.post("/success", async (req, res, next) => {
       transactionId: data?.tran_id,
     }).exec();
 
-    return res.json({data, existingPayment});
-
     if (!existingPayment) {
-      throwError("Payment not found" + JSON.stringify({data, existingPayment}));
+      throwError("Payment not found");
     }
 
     const updatedPayment = await Payment.findOneAndUpdate(
@@ -208,7 +206,7 @@ router.post("/cancel", async (req, res, next) => {
 });
 
 router.post("/ipn", async (req, res, next) => {
-  res.json("ipn");
+  res.json("ping");
   // await deletePaymentAndRedirect(req, res, next, "ipn");
 });
 
