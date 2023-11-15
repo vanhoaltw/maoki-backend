@@ -208,7 +208,8 @@ router.post("/cancel", async (req, res, next) => {
 });
 
 router.post("/ipn", async (req, res, next) => {
-  await deletePaymentAndRedirect(req, res, next, "ipn");
+  res.json("ipn");
+  // await deletePaymentAndRedirect(req, res, next, "ipn");
 });
 
 module.exports = router;
