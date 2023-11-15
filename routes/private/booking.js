@@ -10,7 +10,7 @@ router.get("/", async (req, res, next) => {
     let bookingDetails = await Payment.find({email: req.user.email});
 
     if (bookingDetails.length === 0) {
-      throw new Error("Booking details not found");
+      throwError("Booking details not found", 404);
     }
 
     bookingDetails = await Promise.all(
@@ -22,6 +22,7 @@ router.get("/", async (req, res, next) => {
           ...booking.toObject(),
           hotelName: hotel.name,
           hotelId: hotel._id,
+          hotelLocation: hotel.address.location,
         };
       })
     );
