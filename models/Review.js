@@ -1,10 +1,10 @@
 const {Schema, model} = require("mongoose");
 
 const reviewSchema = new Schema({
-  roomId: {
+  hotelId: {
     type: Schema.Types.ObjectId,
     required: [true, "roomId id must be provided"],
-    ref: "Room",
+    ref: "Hotel",
   },
   userId: {
     type: Schema.Types.ObjectId,
@@ -13,7 +13,7 @@ const reviewSchema = new Schema({
   },
   feedback: {
     type: String,
-    maxLength: 100,
+    maxLength: 250,
     required: true,
   },
   rating: {

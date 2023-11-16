@@ -215,7 +215,7 @@ router.post("/cancel", async (req, res, next) => {
 });
 
 router.post("/ipn", async (req, res, next) => {
-  res.json("ping");
+  res.json("ipn");
 });
 
 module.exports = router;
