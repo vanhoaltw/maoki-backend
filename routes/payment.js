@@ -17,6 +17,7 @@ router.post("/order", async (req, res, next) => {
 
     const email = data[0].email;
     const phoneNumber = data[0].phoneNumber;
+    const hotelId = data[0].hotelId;
 
     const fetchPrices = data.map(async (item) => {
       const room = await Room.findById(item.roomId);
@@ -29,8 +30,16 @@ router.post("/order", async (req, res, next) => {
     const resolvedPrices = await Promise.all(fetchPrices);
     const totalAmount = resolvedPrices.reduce((acc, price) => acc + price, 0);
 
-    // remove email, phoneNumber
-    data = data.map(({email, phoneNumber, ...rest}) => rest);
+    const isSameHotel = data.every(
+      (reserve) => reserve.hotelId === data[0].hotelId
+    );
+
+    if (!isSameHotel) {
+      throwError("Must be single hotel");
+    }
+
+    // remove email, phoneNumber, hotelId
+    data = data.map(({email, phoneNumber, hotelId, ...rest}) => rest);
 
     const sslData = {
       tran_id: TRANSACTION_ID, // use unique tran_id for each api call
@@ -66,6 +75,7 @@ router.post("/order", async (req, res, next) => {
     const paymentData = new Payment({
       transactionId: TRANSACTION_ID,
       email: email,
+      hotelId: hotelId,
       rooms: data,
       phoneNumber: phoneNumber,
       totalAmount: totalAmount,
@@ -116,7 +126,6 @@ router.post("/success", async (req, res, next) => {
       },
       {new: true}
     );
-    console.log(updatedPayment);
 
     if (updatedPayment && updatedPayment.status != "VALID") {
       await Payment.findOneAndDelete({transactionId: data?.tran_id});

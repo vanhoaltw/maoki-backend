@@ -13,6 +13,11 @@ const paymentSchema = new Schema({
     type: String,
     required: true,
   },
+  hotelId: {
+    type: Schema.Types.ObjectId,
+    ref: "Hotel",
+    required: [true, "roomId is required"],
+  },
   rooms: [
     {
       roomId: {

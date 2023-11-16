@@ -4,9 +4,11 @@ const Room = require("../../models/Room");
 const throwError = require("../../utils/throwError");
 const hotelRoutes = require("./hotel");
 const roomRoutes = require("./room");
+const bookingHistoryRoutes = require("./booking-history");
 
 router.use("/room", roomRoutes);
 router.use("/hotel", hotelRoutes);
+router.use("/booking-history", bookingHistoryRoutes);
 
 router.get("/", async (req, res, next) => {
   try {
