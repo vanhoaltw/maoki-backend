@@ -15,6 +15,8 @@ router.post("/order", async (req, res, next) => {
   try {
     let data = req.body; //an array
 
+    // TODO: do validation if isBlocked the room anyone can't by this room
+
     const email = data[0].email;
     const phoneNumber = data[0].phoneNumber;
     const hotelId = data[0].hotelId;

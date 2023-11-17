@@ -4,16 +4,21 @@ const router = require("express").Router();
 
 router.get("/", async (req, res, next) => {
   try {
-    let location = await Hotel.find();
+    const hotelCounts = await Hotel.aggregate([
+      {
+        $group: {
+          _id: "$address.location",
+          count: {$sum: 1},
+        },
+      },
+    ]);
 
-    location = location.map((singleLocation) => {
-      return {
-        _id: singleLocation._id,
-        address: singleLocation.address.location,
-      };
+    const locationCounts = {};
+    hotelCounts.forEach((item) => {
+      locationCounts[item._id] = item.count;
     });
 
-    res.json(location);
+    res.json(locationCounts);
   } catch (error) {
     next(error);
   }
