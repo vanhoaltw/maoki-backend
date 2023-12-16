@@ -24,9 +24,9 @@ const updateById = async (req, res, next) => {
     const existingRoom = await Room.findById(id);
     if (!existingRoom) throwError("Room does not exist");
 
-    await Room.findByIdAndUpdate({_id: existingRoom._id}, data);
+    await Room.findByIdAndUpdate({ _id: existingRoom._id }, data);
 
-    res.json({message: "Room updated successfully."});
+    res.json({ message: "Room updated successfully." });
   } catch (error) {
     next(error);
   }
@@ -50,7 +50,7 @@ const get = async (req, res, next) => {
       throwError("Hotel not exist!");
     }
 
-    const rooms = await Room.find({hotelId: existingHotel._id});
+    const rooms = await Room.find({ hotelId: existingHotel._id });
 
     if (!rooms) {
       throwError("Room not found!");
@@ -65,6 +65,7 @@ const get = async (req, res, next) => {
 const post = async (req, res, next) => {
   try {
     const data = req.body;
+    const hotelId = data?.hotelId;
     const isRequired = isFieldsRequired(data, [
       "title",
       "facilities",
@@ -93,54 +94,51 @@ const post = async (req, res, next) => {
       throwError("Room Info is required", 404);
     }
 
-    const isRoomRequired = isFieldsRequired(data.roomInfo, [
-      "roomSize",
-      "regularPrice",
-      "discountedPrice",
-      "view",
-      "bedType",
-      "additionalInfo",
-    ]);
+    // const isRoomRequired = isFieldsRequired(data.roomInfo, [
+    //   "roomSize",
+    //   "regularPrice",
+    //   "bedType",
+    // ]);
 
-    if (!isRoomRequired) {
-      throwError("Room Info is required", 404);
-    }
+    // if (!isRoomRequired) {
+    //   throwError("Room Info is required", 404);
+    // }
 
     const existingHotel = await Hotel.findOne({
+      _id: hotelId,
       managerId: req.user._id,
     }).exec();
 
     if (!existingHotel) {
-      throwError("Hotel not exist!");
+      throwError("Hotel not exist!", 404);
     }
 
-    if (existingHotel.status !== status.APPROVED) {
-      throwError("Hotel is not APPROVED", 404);
-    }
+    // if (existingHotel.status !== status.APPROVED) {
+    //   throwError("Hotel is not APPROVED", 404);
+    // }
 
     data.hotelId = existingHotel._id;
 
-    if (existingHotel._doc.availableRoom <= existingHotel._doc.addedRoom) {
-      throwError(
-        `Room not available because room limit 
-          ${existingHotel._doc.availableRoom}`,
-        404
-      );
-    }
+    // if (existingHotel._doc.availableRoom <= existingHotel._doc.addedRoom) {
+    //   throwError(
+    //     `Room not available because room limit
+    //       ${existingHotel._doc.availableRoom}`,
+    //     404
+    //   );
+    // }
 
     const newRoom = new Room(data);
     await newRoom.save();
 
     const updatedHotel = await Hotel.findOneAndUpdate(
-      {managerId: req.user._id},
-      {$inc: {addedRoom: 1}},
-      {new: true}
+      { managerId: req.user._id },
+      { $inc: { addedRoom: 1 } },
+      { new: true }
     );
-    console.log(updatedHotel);
-    res.json({message: "Room created successfully"});
+    res.json({ data: updatedHotel, message: "Room created successfully" });
   } catch (error) {
     next(error);
   }
 };
 
-module.exports = {getById, updateById, deleteById, get, post};
+module.exports = { getById, updateById, deleteById, get, post };

@@ -14,16 +14,16 @@ const paymentRoutes = require("./payment");
 router.use("/auth", authRoutes);
 
 router.use("/admin", authenticate, isAdmin, adminRoutes);
-router.use("/manager", authenticate, isManager, managerRoutes);
 
 router.use("/public", publicRoutes);
 router.use("/payment", paymentRoutes);
 
+router.use("/manager", authenticate, managerRoutes);
 router.use("/", authenticate, privateRoutes);
 
 // Error 404 Page Not Found
 router.use((req, res, next) => {
-  res.status(404).json({message: "404 Route is unavailable."});
+  res.status(404).json({ message: "404 Route is unavailable." });
 });
 
 module.exports = router;

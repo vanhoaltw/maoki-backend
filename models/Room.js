@@ -13,7 +13,7 @@ const roomSchema = new Schema({
   facilities: {
     type: [String],
     default: [],
-    required: [true, "Facilities is required"],
+    // required: [true, "Facilities is required"],
   },
   thumbnails: {
     type: [String],
@@ -32,26 +32,26 @@ const roomSchema = new Schema({
   capacity: {
     adult: {
       type: Number,
-      required: [true, "Adult capacity is required"],
+      // required: [true, "Adult capacity is required"],
       min: [0, "Adult capacity cannot be negative"],
       max: [6, "max capacity 6"],
     },
     children: {
       type: Number,
-      required: [true, "children capacity is required"],
+      // required: [true, "children capacity is required"],
       min: [0, "children capacity cannot be negative"],
       max: [6, "max capacity 6"],
     },
   },
   roomInfo: {
-    roomSize: {type: String, required: [true, "Room size is required"]},
+    roomSize: {type: String},
     regularPrice: {
       type: Number,
       required: [true, "Regular price is required"],
     },
     discountedPrice: {
       type: Number,
-      required: [true, "Discounted price is required"],
+      // required: [true, "Discounted price is required"],
     },
     bedType: {type: String},
     view: {type: String},

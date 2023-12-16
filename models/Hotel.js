@@ -15,15 +15,15 @@ const hotelSchema = new Schema(
     },
     photoURL: {
       type: String,
-      required: [true, "Photo URL is required"],
+      // required: [true, "Photo URL is required"],
     },
     description: {
       type: String,
-      required: [true, "Description is required"],
+      // required: [true, "Description is required"],
     },
     availableRoom: {
       type: Number,
-      required: [true, "Available Room is required"],
+      // required: [true, "Available Room is required"],
       default: 0,
       min: 0,
     },
@@ -31,32 +31,32 @@ const hotelSchema = new Schema(
       type: Number,
       default: 0,
       min: [0, "Added Room cannot be negative"],
-      validate: {
-        validator: function (value) {
-          return value <= this.availableRoom;
-        },
-        message: "Added Room cannot be greater than Available Room.",
-      },
+      // validate: {
+      //   validator: function (value) {
+      //     return value <= this.availableRoom;
+      //   },
+      //   message: "Added Room cannot be greater than Available Room.",
+      // },
     },
     address: {
       thumbnailURL: {
         type: String,
-        required: [true, "Thumbnail URL is required"],
+        // required: [true, "Thumbnail URL is required"],
       },
       location: {
         type: String,
-        required: [true, "Location is required"],
+        // required: [true, "Location is required"],
       },
       map: {
         lat: {
           type: Number,
-          required: [true, "Latitude is required"],
+          // required: [true, "Latitude is required"],
           min: -90,
           max: 90,
         },
         lng: {
           type: Number,
-          required: [true, "Longitude is required"],
+          // required: [true, "Longitude is required"],
           min: -180,
           max: 180,
         },

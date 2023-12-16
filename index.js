@@ -1,19 +1,17 @@
 require("dotenv").config();
-const {roomsAvailabilityChecking} = require("./cron-jobs");
+const { roomsAvailabilityChecking } = require("./cron-jobs");
 const express = require("express");
 const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 3001;
 
-const dbName = "hotel-haven";
-const URI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.p7e2eey.mongodb.net/${dbName}?retryWrites=true&w=majority`;
-
 const connectDB = require("./config/db");
 const routes = require("./routes");
+const { env } = require("./config/env");
 
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
 // all routes included
 app.use(routes);
@@ -23,11 +21,11 @@ app.use((err, req, res, next) => {
   console.log(err);
   res
     .status(err.status || 500)
-    .json({message: err.message || "Something went wrong!"});
+    .json({ message: err.message || "Something went wrong!" });
 });
 
 // Database connection URL / String
-connectDB(URI)
+connectDB(env.mongoUri)
   .then(() => {
     console.log("Database connection established!");
 

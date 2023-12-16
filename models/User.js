@@ -1,4 +1,4 @@
-const {Schema, model} = require("mongoose");
+const { Schema, model } = require("mongoose");
 const gender = require("../constants/gender");
 const role = require("../constants/role");
 
@@ -29,17 +29,17 @@ const userSchema = new Schema(
     },
     phone: {
       type: String,
-      required: true,
+      // required: true,
     },
     age: {
       type: Number,
-      required: true,
+      // required: true,
       min: [18, "Age must be at least 18 years"],
     },
     gender: {
       type: String,
       enum: [gender.MALE, gender.FEMALE, gender.OTHERS],
-      required: true,
+      // required: true,
     },
     nid: {
       type: String, // Assuming National ID is alphanumeric, use String
@@ -51,7 +51,7 @@ const userSchema = new Schema(
       default: role.CUSTOMER,
     },
   },
-  {timestamps: true}
+  { timestamps: true }
 );
 
 const User = model("User", userSchema);
