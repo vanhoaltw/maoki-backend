@@ -59,6 +59,7 @@ router.get(
   catchAsync(async (req, res, next) => {
     const { id } = req.params;
     const results = await Blog.find({ userId: id }).populate("userId");
+    results.map((data) => ({ ...data, userPofile: data?.userId?.photoURL, }))
     res.json(results);
   })
 );
