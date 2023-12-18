@@ -24,6 +24,9 @@ const userSchema = new Schema(
       minLength: [8, "Password must be at least 8 characters"],
       required: true,
     },
+
+    introduction: { type: String },
+
     photoURL: {
       type: String,
     },

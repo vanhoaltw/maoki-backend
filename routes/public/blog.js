@@ -1,12 +1,13 @@
 const Blog = require("../../models/Blog");
 const User = require("../../models/User");
+const catchAsync = require("../../utils/catchAsync");
 const throwError = require("../../utils/throwError");
 
 const router = require("express").Router();
 
 router.get("/", async (req, res, next) => {
   try {
-    const {page = 1, limit = 10, descending = "false"} = req.query;
+    const { page = 1, limit = 10, descending = "false" } = req.query;
 
     const parsedLimit = parseInt(limit, 10);
     const parsedPage = parseInt(page, 10);
@@ -17,7 +18,7 @@ router.get("/", async (req, res, next) => {
     const skip = (parsedPage - 1) * parsedLimit;
 
     let blog = await Blog.find()
-      .sort({createdAt: sortDirection})
+      .sort({ createdAt: sortDirection })
       .skip(skip)
       .limit(parsedLimit);
 
@@ -53,4 +54,12 @@ router.get("/", async (req, res, next) => {
   }
 });
 
+router.get(
+  "/getByUserId/:id",
+  catchAsync(async (req, res, next) => {
+    const { id } = req.params;
+    const results = await Blog.find({ userId: id }).populate("userId");
+    res.json(results);
+  })
+);
 module.exports = router;

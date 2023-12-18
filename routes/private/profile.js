@@ -16,10 +16,7 @@ router.get("/:id", async (req, res, next) => {
     if (!user) throwError("User not found", 404);
 
     user = {
-      name: user.name,
-      photoURL: user.photoURL,
-      age: user.age,
-      gender: user.gender,
+      ...user._doc,
       joined: user.createdAt,
     };
 
